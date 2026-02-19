@@ -1,14 +1,36 @@
-Binaries
-DerivedDataCache
-Intermediate
-Saved
-.vscode
-.vs
-*.VC.db
-*.opensdf
+# Unreal Engine
+DerivedDataCache/
+Binaries/
+Build/
+Saved/
+Intermediate/
+Script/
+*.pdb
+*.pdb.*
 *.opendb
-*.sdf
+*.obj
+*.cache
+*.db
+
+# Visual Studio / VSCode
+.vs/
 *.sln
-*.suo
-*.xcodeproj
-*.xcworkspace
+*.vcxproj*
+*.VC.db*
+.vscode/
+*.code-workspace
+
+# Rider
+.idea/
+.rider/
+
+# UE & VS Caches / Generated Files
+*.log
+*.tmp
+*.ipch
+*.ilk
+*.tlog
+
+# Assets (HUGE -> do NOT track)
+Content/Assets/
+Content/InventoryAssets
