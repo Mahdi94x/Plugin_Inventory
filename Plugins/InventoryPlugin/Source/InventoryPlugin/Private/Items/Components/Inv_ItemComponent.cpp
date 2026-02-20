@@ -7,8 +7,7 @@ UInv_ItemComponent::UInv_ItemComponent()
 
 	PrimaryComponentTick.bCanEverTick = false;
 	PickupMessage = FString("E - Pick Up!");
-
-
+	
 }
 
 

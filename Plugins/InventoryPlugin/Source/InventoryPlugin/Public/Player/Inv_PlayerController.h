@@ -17,11 +17,11 @@ class INVENTORYPLUGIN_API AInv_PlayerController : public APlayerController
 	
 public:
 	AInv_PlayerController();
-	void Tick(float DeltaSeconds) override;
+	virtual void Tick(float DeltaSeconds) override;
 	
 protected:
-	void BeginPlay() override;
-	void SetupInputComponent() override;
+	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
 	
 private:
 	
