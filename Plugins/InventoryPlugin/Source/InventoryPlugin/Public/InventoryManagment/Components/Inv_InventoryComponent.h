@@ -15,6 +15,7 @@ class INVENTORYPLUGIN_API UInv_InventoryComponent : public UActorComponent
 
 public:
 	UInv_InventoryComponent();
+	void ToggleInventoryMenu();
 
 protected:
 	virtual void BeginPlay() override;
@@ -29,5 +30,9 @@ private:
 	TObjectPtr<UInv_InventoryBase> InventoryMenu;
 	
 	TWeakObjectPtr<APlayerController> OwningController;
+	
+	bool bInventoryMenuOpen = false;
+	void OpenInventoryMenu();
+	void CloseInventoryMenu();
 
 };

@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Interaction/Inv_HighlightableInterface.h"
 #include "Items/Components/Inv_ItemComponent.h"
+#include "InventoryManagment/Components/Inv_InventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Widgets/HUD/Inv_HUDWidget.h"
 
@@ -29,7 +30,10 @@ void AInv_PlayerController::BeginPlay()
 		}
 	}
 	
+	InventoryComponent = FindComponentByClass<UInv_InventoryComponent>();
+	
 	CreateHUDWidget();
+	
 }
 
 void AInv_PlayerController::SetupInputComponent()
@@ -40,6 +44,7 @@ void AInv_PlayerController::SetupInputComponent()
 	if (IsValid(EnhancedInputComponent))
 	{
 		EnhancedInputComponent->BindAction(PrimaryInteractAction, ETriggerEvent::Started,this, &AInv_PlayerController::PrimaryInteract);
+		EnhancedInputComponent->BindAction(ToggleInventoryAction, ETriggerEvent::Started,this, &AInv_PlayerController::ToggleInventory);
 	}
 }
 
@@ -47,6 +52,12 @@ void AInv_PlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	TraceForItem();
+}
+
+void AInv_PlayerController::ToggleInventory()
+{
+	if (!InventoryComponent.IsValid()) return;
+	InventoryComponent->ToggleInventoryMenu();
 }
 
 void AInv_PlayerController::PrimaryInteract()
