@@ -5,13 +5,12 @@
 #include "Net/UnrealNetwork.h"
 #include "Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
 
-UInv_InventoryComponent::UInv_InventoryComponent()
+UInv_InventoryComponent::UInv_InventoryComponent() : InventoryFaList(this)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	SetIsReplicatedByDefault(true);
 	bReplicateUsingRegisteredSubObjectList = true;
 	bInventoryMenuOpen = false;
-	
 }
 
 void UInv_InventoryComponent::ToggleInventoryMenu()
@@ -66,7 +65,12 @@ void UInv_InventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeP
 
 void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount)
 {
-	UInv_InventoryItem* InventoryItem = InventoryFaList.AddEntry(ItemComponent);
+	UInv_InventoryItem* NewInventoryItem = InventoryFaList.AddEntry(ItemComponent);
+	
+	if (GetOwner()->GetNetMode() == NM_ListenServer || GetOwner()->GetNetMode() ==NM_Standalone)
+	{
+		OnItemAdded.Broadcast(NewInventoryItem);
+	}
 	
 	// TODO: Tell the Inv_ItemComponent to destroy its owning actor
 }
