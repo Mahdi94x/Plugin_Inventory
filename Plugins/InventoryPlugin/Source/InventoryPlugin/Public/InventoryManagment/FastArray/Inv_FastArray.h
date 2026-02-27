@@ -44,8 +44,8 @@ struct FInv_InventoryFasTArray : public FFastArraySerializer
 	/*Additional Utility Functions*/
 	TArray<UInv_InventoryItem*> GetAllItems() const;
 	UInv_InventoryItem* AddEntry(UInv_ItemComponent* ItemComponent);
-	UInv_InventoryItem* AddEntry(UInv_InventoryItem* Item);
-	void RemoveEntry(UInv_InventoryItem* Item);
+	UInv_InventoryItem* AddEntry(UInv_InventoryItem* InventoryItem);
+	void RemoveEntry(UInv_InventoryItem* InventoryItem);
 
 private:
 	

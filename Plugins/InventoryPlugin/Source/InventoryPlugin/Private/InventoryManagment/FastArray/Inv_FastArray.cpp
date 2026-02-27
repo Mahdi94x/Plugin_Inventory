@@ -1,6 +1,7 @@
 #include "InventoryManagment/FastArray/Inv_FastArray.h"
 #include"Items/Inv_InventoryItem.h"
 #include "InventoryManagment/Components/Inv_InventoryComponent.h"
+#include "Items/Components/Inv_ItemComponent.h"
 
 TArray<UInv_InventoryItem*> FInv_InventoryFasTArray::GetAllItems() const
 {
@@ -44,29 +45,43 @@ bool FInv_InventoryFasTArray::NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaPar
 
 UInv_InventoryItem* FInv_InventoryFasTArray::AddEntry(UInv_ItemComponent* ItemComponent)
 {
-	return nullptr;
-	// TODO: Implement once ItemComponent is complete (For now it only contain a message to display for pickup widget)
+	check(OwnerComponent); /*Inv_InventoryComponent*/ 
+	AActor* OwningActor = OwnerComponent->GetOwner(); /*Inv_PlayerController*/
+	check(OwningActor->HasAuthority());
+	
+	UInv_InventoryComponent* InventoryComponent = Cast<UInv_InventoryComponent>(OwnerComponent);
+	if (!IsValid(InventoryComponent)) return nullptr;
+	
+	FInv_InventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
+	NewEntry.Item = ItemComponent->GetItemComponent_Manifest().ManifestCreation(OwningActor);
+	/*NewEntry.Item is a UObject must be replicated as a subobject in Inv_InventoryComponent*/
+	
+	InventoryComponent->AddRepSubObj(NewEntry.Item);
+	MarkItemDirty(NewEntry);
+	
+	return NewEntry.Item;
+	
 }
 
-UInv_InventoryItem* FInv_InventoryFasTArray::AddEntry(UInv_InventoryItem* Item) /*From FAS Header file*/
+UInv_InventoryItem* FInv_InventoryFasTArray::AddEntry(UInv_InventoryItem* InventoryItem) /*From FAS Header file*/
 {
-	check(OwnerComponent);
-	const AActor* OwningActor = OwnerComponent->GetOwner();
+	check(OwnerComponent); /*Inv_InventoryComponent*/ 
+	const AActor* OwningActor = OwnerComponent->GetOwner(); /*Inv_PlayerController*/
 	check(OwningActor->HasAuthority());
 	
 	FInv_InventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
-	NewEntry.Item = Item;
+	NewEntry.Item = InventoryItem;
 	
 	MarkItemDirty(NewEntry); 
-	return Item;
+	return InventoryItem;
 }
 
-void FInv_InventoryFasTArray::RemoveEntry(UInv_InventoryItem* Item) /*From FAS Header file*/
+void FInv_InventoryFasTArray::RemoveEntry(UInv_InventoryItem* InventoryItem) /*From FAS Header file*/
 {
 	for (auto EntryIterator = Entries.CreateIterator(); EntryIterator; ++EntryIterator)
 	{
 		FInv_InventoryEntry& Entry = *EntryIterator;
-		if (Entry.Item == Item)
+		if (Entry.Item == InventoryItem)
 		{
 			EntryIterator.RemoveCurrent();
 		}

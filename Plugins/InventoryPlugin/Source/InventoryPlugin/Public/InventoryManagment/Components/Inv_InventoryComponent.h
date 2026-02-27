@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "InventoryManagment/FastArray/Inv_FastArray.h"
 #include "Inv_InventoryComponent.generated.h"
 
 class UInv_ItemComponent;
@@ -11,7 +12,7 @@ class UInv_InventoryItem;
 class UInv_InventoryBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryItemChange, UInv_InventoryItem*, Item);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNRoomInInventory);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNoRoomInInventory);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent), Blueprintable)
 class INVENTORYPLUGIN_API UInv_InventoryComponent : public UActorComponent
@@ -32,15 +33,24 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_AddStacksToItem(UInv_ItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
 	
+	void AddRepSubObj(UObject* SubObj);
+	
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	FInventoryItemChange OnItemAdded;
 	FInventoryItemChange OnItemRemoved;
-	FNRoomInInventory NoRoomInInventory;
+	FNoRoomInInventory NoRoomInInventory;
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
 	void ConstructInventory();
+	void OpenInventoryMenu();
+	void CloseInventoryMenu();
+	
+	UPROPERTY(Replicated)
+	FInv_InventoryFasTArray InventoryFaList;
 	
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	TSubclassOf<UInv_InventoryBase> InventoryMenuClass;
@@ -50,8 +60,6 @@ private:
 	
 	TWeakObjectPtr<APlayerController> OwningController;
 	
-	bool bInventoryMenuOpen = false;
-	void OpenInventoryMenu();
-	void CloseInventoryMenu();
-
+	bool bInventoryMenuOpen;
+	
 };
