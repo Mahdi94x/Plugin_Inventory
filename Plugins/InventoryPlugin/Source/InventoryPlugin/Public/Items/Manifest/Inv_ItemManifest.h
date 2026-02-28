@@ -10,6 +10,7 @@
  * The Item Manifest contains the required data for creating a new Inv_InventoryItem
  */
 
+struct FInv_ItemFragmentBase;
 class UInv_InventoryItem;
 
 USTRUCT(BlueprintType)
@@ -28,5 +29,8 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	FGameplayTag ItemType;
+	
+	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (ExcludeBaseStruct))
+	TArray<TInstancedStruct<FInv_ItemFragmentBase>> ItemFragments;
 };
 
