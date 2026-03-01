@@ -34,3 +34,5 @@ private:
 	TArray<TInstancedStruct<FInv_ItemFragmentBase>> ItemFragments;
 };
 
+
+
