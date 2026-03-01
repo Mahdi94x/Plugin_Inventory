@@ -3,7 +3,9 @@
 #include "Widgets/Inventory/Spatial/Inv_SpatialInventory.h"
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
+#include "InventoryManagment/Utils/Inv_InventoryStatics.h"
 #include "Widgets/Inventory/Spatial/Inv_InventoryGrid.h"
+#include "InventoryPlugin.h"
 
 void UInv_SpatialInventory::NativeOnInitialized()
 {
@@ -18,9 +20,25 @@ void UInv_SpatialInventory::NativeOnInitialized()
 
 FInv_SlotAvailabilityResult UInv_SpatialInventory::HasRoomForItem(UInv_ItemComponent* ItemComponent) const
 {
-	FInv_SlotAvailabilityResult Result;
-	Result.TotalRoomToFill = 1;
-	return Result;
+	switch (UInv_InventoryStatics::GetItemCategoryFromItemComp(ItemComponent))
+	{
+	case EInv_ItemCategory::Equippable:
+		return Grid_Equippables->HasRoomForItem_Grid_IC(ItemComponent);
+
+	case EInv_ItemCategory::Consumable:
+		return Grid_Consumables->HasRoomForItem_Grid_IC(ItemComponent);
+
+	case EInv_ItemCategory::Craftable:
+		return Grid_Craftables->HasRoomForItem_Grid_IC(ItemComponent);
+
+	case EInv_ItemCategory::None:
+		UE_LOG(LogInventory, Error, TEXT("ItemComponent doesn't have a valid item category"));
+		return FInv_SlotAvailabilityResult();
+
+	default:
+		UE_LOG(LogInventory, Error, TEXT("Unhandled item category in HasRoomForItem"));
+		return FInv_SlotAvailabilityResult();
+	}
 	
 }
 

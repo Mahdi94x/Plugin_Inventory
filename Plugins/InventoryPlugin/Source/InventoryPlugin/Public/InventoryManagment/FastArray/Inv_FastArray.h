@@ -24,7 +24,7 @@ private:
 	TObjectPtr<UInv_InventoryItem> Item = nullptr;
 };
 
-/** A list of inventory item (only replicated deltas) */
+/** A list of inventory item (only replicates deltas) */
 USTRUCT(BlueprintType)
 struct FInv_InventoryFasTArray : public FFastArraySerializer
 {

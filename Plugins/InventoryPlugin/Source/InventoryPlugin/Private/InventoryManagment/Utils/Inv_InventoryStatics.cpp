@@ -2,6 +2,8 @@
 
 #include "InventoryManagment/Utils/Inv_InventoryStatics.h"
 #include "InventoryManagment/Components/Inv_InventoryComponent.h"
+#include "Types/Inv_GridTypes.h"
+#include "Items/Components/Inv_ItemComponent.h"
 
 UInv_InventoryComponent* UInv_InventoryStatics::GetInventoryComponent(const APlayerController* PlayerController)
 {
@@ -11,3 +13,11 @@ UInv_InventoryComponent* UInv_InventoryStatics::GetInventoryComponent(const APla
 	return InventoryComponent;
 	
 }
+
+EInv_ItemCategory UInv_InventoryStatics::GetItemCategoryFromItemComp(UInv_ItemComponent* ItemComponent)
+{
+	if (!IsValid(ItemComponent)) return EInv_ItemCategory::None;
+	return ItemComponent->GetItemComponent_Manifest().GetItemCategory();
+}
+
+
