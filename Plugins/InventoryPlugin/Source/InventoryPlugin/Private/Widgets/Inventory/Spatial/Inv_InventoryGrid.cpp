@@ -9,6 +9,8 @@
 #include "InventoryManagment/Utils/Inv_InventoryStatics.h"
 #include "Items/Inv_InventoryItem.h"
 #include "Items/Components/Inv_ItemComponent.h"
+#include "Items/Fragments/Inv_FragmentTags.h"
+#include "Items/Fragments/Inv_ItemFragment.h"
 #include "Widgets/Utils/Inv_WidgetUtils.h"
 #include "Items/Manifest/Inv_ItemManifest.h"
 
@@ -35,6 +37,13 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_IM(const FIn
 {
 	FInv_SlotAvailabilityResult Result;
 	Result.TotalRoomToFill = 1;
+	
+	FInv_SlotAvailability SlotAvailability;
+	SlotAvailability.AmountToFill = 1;
+	SlotAvailability.Index = 0;
+	
+	Result.SlotAvailabilities.Add(MoveTemp(SlotAvailability)); /*move semantics for optimization*/
+	
 	return Result;
 }
 
@@ -42,9 +51,24 @@ void UInv_InventoryGrid::AddItem(UInv_InventoryItem* InventoryItem)
 {
 	if (!MatchesCategory(InventoryItem)) return;
 	
-	FInv_SlotAvailabilityResult Result = HasRoomForItem_Grid_II(InventoryItem);
+	const FInv_SlotAvailabilityResult Result = HasRoomForItem_Grid_II(InventoryItem);
+	AddItemToIndices(Result, InventoryItem);
+}
+
+void UInv_InventoryGrid::AddItemToIndices(const FInv_SlotAvailabilityResult& Result,
+	const UInv_InventoryItem* NewItem)
+{
+	// get grid fragment from the item using gameplay tags so we know how many grid spaces the item take
+	const FInv_GridFragment* GridFragment = GetFragment<FInv_GridFragment>(NewItem, FragmentTags::GridFragment);
 	
-	// TODO: Create a widget to show the item icon and add it to the correct spot on the grid
+	// Get image fragment so we have the icon to display
+	const FInv_ImageFragment* ImageFragment = GetFragment<FInv_ImageFragment>(NewItem, FragmentTags::IconFragment);
+	
+	if (!GridFragment || !ImageFragment) return;
+	
+	// Create a widget to add to the grid
+	// Store the created widget in a container for future use
+	
 }
 
 void UInv_InventoryGrid::ConstructGridSlots()

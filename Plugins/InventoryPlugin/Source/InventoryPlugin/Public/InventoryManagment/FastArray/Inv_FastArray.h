@@ -18,7 +18,7 @@ struct FInv_InventoryEntry : public FFastArraySerializerItem
 	
 private:
 	
-	friend struct FInv_InventoryFasTArray;
+	friend struct FInv_InventoryFastArray;
 	friend UInv_InventoryComponent;
 	UPROPERTY()
 	TObjectPtr<UInv_InventoryItem> Item = nullptr;
@@ -26,12 +26,12 @@ private:
 
 /** A list of inventory item (only replicates deltas) */
 USTRUCT(BlueprintType)
-struct FInv_InventoryFasTArray : public FFastArraySerializer
+struct FInv_InventoryFastArray : public FFastArraySerializer
 {
 	GENERATED_BODY()
 	
-	FInv_InventoryFasTArray() : OwnerComponent(nullptr) {}
-	FInv_InventoryFasTArray(UActorComponent* InOwnerComponent) : OwnerComponent(InOwnerComponent) {}
+	FInv_InventoryFastArray() : OwnerComponent(nullptr) {}
+	FInv_InventoryFastArray(UActorComponent* InOwnerComponent) : OwnerComponent(InOwnerComponent) {}
 	
 	// FFastArraySerializer contract, Replication Event Hooks
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
@@ -61,7 +61,7 @@ private:
 };
 
 template<> /* Set a flag that this type (FInv_InventoryFasTArray) should be delta serialized*/
-struct TStructOpsTypeTraits<FInv_InventoryFasTArray> : TStructOpsTypeTraitsBase2<FInv_InventoryFasTArray>
+struct TStructOpsTypeTraits<FInv_InventoryFastArray> : TStructOpsTypeTraitsBase2<FInv_InventoryFastArray>
 {
 	enum {WithNetDeltaSerializer = true};
 };

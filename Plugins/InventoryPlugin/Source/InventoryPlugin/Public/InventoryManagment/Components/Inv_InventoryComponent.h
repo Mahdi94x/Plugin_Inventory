@@ -50,7 +50,7 @@ private:
 	void CloseInventoryMenu();
 	
 	UPROPERTY(Replicated)
-	FInv_InventoryFasTArray InventoryFaList;
+	FInv_InventoryFastArray InventoryFaList;
 	
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	TSubclassOf<UInv_InventoryBase> InventoryMenuClass;

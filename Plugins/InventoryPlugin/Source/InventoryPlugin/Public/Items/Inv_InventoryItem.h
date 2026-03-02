@@ -16,6 +16,7 @@ class INVENTORYPLUGIN_API UInv_InventoryItem : public UObject
 	GENERATED_BODY()
 	
 public:
+	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual bool IsSupportedForNetworking() const override {return true; }
 	
@@ -28,3 +29,11 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Inventory", meta = (BaseStruct = "/Script/Plugin_Inventory.Inv_ItemManifest"), Replicated)
 	FInstancedStruct ItemManifest;
 };
+
+template <typename FragmentType>
+const FragmentType* GetFragment(const UInv_InventoryItem* InventoryItem, const FGameplayTag& Tag)
+{
+	if (!IsValid(InventoryItem)) return nullptr;
+	const FInv_ItemManifest& Manifest = InventoryItem->GetItemManifest();
+	return Manifest.GetFragmentOfTypeWithTag<FragmentType>(Tag);
+}

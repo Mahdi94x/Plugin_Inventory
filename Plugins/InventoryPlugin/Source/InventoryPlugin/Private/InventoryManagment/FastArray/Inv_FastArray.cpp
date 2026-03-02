@@ -3,7 +3,7 @@
 #include "InventoryManagment/Components/Inv_InventoryComponent.h"
 #include "Items/Components/Inv_ItemComponent.h"
 
-TArray<UInv_InventoryItem*> FInv_InventoryFasTArray::GetAllItems() const
+TArray<UInv_InventoryItem*> FInv_InventoryFastArray::GetAllItems() const
 {
 	TArray<UInv_InventoryItem*> Results;
 	Results.Reserve(Entries.Num());
@@ -15,7 +15,7 @@ TArray<UInv_InventoryItem*> FInv_InventoryFasTArray::GetAllItems() const
 	return Results;
 }
 
-void FInv_InventoryFasTArray::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
+void FInv_InventoryFastArray::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
 {
 	UInv_InventoryComponent* InventoryComponent = Cast<UInv_InventoryComponent>(OwnerComponent);
 	if (!IsValid(InventoryComponent)) return;
@@ -26,7 +26,7 @@ void FInv_InventoryFasTArray::PreReplicatedRemove(const TArrayView<int32> Remove
 	}
 }
 
-void FInv_InventoryFasTArray::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
+void FInv_InventoryFastArray::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
 {
 	UInv_InventoryComponent* InventoryComponent = Cast<UInv_InventoryComponent>(OwnerComponent);
 	if (!IsValid(InventoryComponent)) return;
@@ -38,12 +38,12 @@ void FInv_InventoryFasTArray::PostReplicatedAdd(const TArrayView<int32> AddedInd
 	
 }
 
-bool FInv_InventoryFasTArray::NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
+bool FInv_InventoryFastArray::NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
 {
-	return FastArrayDeltaSerialize<FInv_InventoryEntry, FInv_InventoryFasTArray>(Entries, DeltaParams,*this);
+	return FastArrayDeltaSerialize<FInv_InventoryEntry, FInv_InventoryFastArray>(Entries, DeltaParams,*this);
 }
 
-UInv_InventoryItem* FInv_InventoryFasTArray::AddEntry(UInv_ItemComponent* ItemComponent)
+UInv_InventoryItem* FInv_InventoryFastArray::AddEntry(UInv_ItemComponent* ItemComponent)
 {
 	check(OwnerComponent); /*Inv_InventoryComponent*/ 
 	AActor* OwningActor = OwnerComponent->GetOwner(); /*Inv_PlayerController*/
@@ -63,7 +63,7 @@ UInv_InventoryItem* FInv_InventoryFasTArray::AddEntry(UInv_ItemComponent* ItemCo
 	
 }
 
-UInv_InventoryItem* FInv_InventoryFasTArray::AddEntry(UInv_InventoryItem* InventoryItem) /*From FAS Header file*/
+UInv_InventoryItem* FInv_InventoryFastArray::AddEntry(UInv_InventoryItem* InventoryItem) /*From FAS Header file*/
 {
 	check(OwnerComponent); /*Inv_InventoryComponent*/ 
 	const AActor* OwningActor = OwnerComponent->GetOwner(); /*Inv_PlayerController*/
@@ -76,7 +76,7 @@ UInv_InventoryItem* FInv_InventoryFasTArray::AddEntry(UInv_InventoryItem* Invent
 	return InventoryItem;
 }
 
-void FInv_InventoryFasTArray::RemoveEntry(UInv_InventoryItem* InventoryItem) /*From FAS Header file*/
+void FInv_InventoryFastArray::RemoveEntry(UInv_InventoryItem* InventoryItem) /*From FAS Header file*/
 {
 	for (auto EntryIterator = Entries.CreateIterator(); EntryIterator; ++EntryIterator)
 	{

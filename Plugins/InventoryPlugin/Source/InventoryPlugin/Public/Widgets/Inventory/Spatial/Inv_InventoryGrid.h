@@ -33,6 +33,7 @@ private:
 	bool MatchesCategory(const UInv_InventoryItem* InventoryItem) const;
 	FInv_SlotAvailabilityResult HasRoomForItem_Grid_II(const UInv_InventoryItem* InventoryItem);
 	FInv_SlotAvailabilityResult HasRoomForItem_Grid_IM(const FInv_ItemManifest& ItemManifest);
+	void AddItemToIndices(const FInv_SlotAvailabilityResult& Result, const UInv_InventoryItem* NewItem);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Inventory")
 	EInv_ItemCategory ItemCategory;
