@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Items/Fragments/Inv_ItemFragment.h"
 #include "Types/Inv_GridTypes.h"
 #include "Inv_InventoryGrid.generated.h"
 
+class UInv_SlottedItem;
 struct FInv_ItemManifest;
 class UInv_ItemComponent;
 class UInv_InventoryItem;
@@ -27,13 +29,25 @@ public:
 	UFUNCTION()
 	void AddItem(UInv_InventoryItem* InventoryItem);
 	
+
 private:
 	
 	void ConstructGridSlots();
 	bool MatchesCategory(const UInv_InventoryItem* InventoryItem) const;
 	FInv_SlotAvailabilityResult HasRoomForItem_Grid_II(const UInv_InventoryItem* InventoryItem);
 	FInv_SlotAvailabilityResult HasRoomForItem_Grid_IM(const FInv_ItemManifest& ItemManifest);
-	void AddItemToIndices(const FInv_SlotAvailabilityResult& Result, const UInv_InventoryItem* NewItem);
+	void AddItemToIndices(const FInv_SlotAvailabilityResult& Result, UInv_InventoryItem* NewItem);
+	FVector2D GetDrawSize(const FInv_GridFragment* GridFragment) const;
+	void SetSlottedItemImage(const UInv_SlottedItem* SlottedItem, const FInv_GridFragment* GridFragment, const FInv_ImageFragment* ImageFragment) const;
+	void AddItemAtIndex(UInv_InventoryItem* Item, const int32 Index, const bool bStackable, const int32 StackAmount);
+	UInv_SlottedItem* CreateSlottedItem(UInv_InventoryItem* Item,
+		const bool Stackable,
+		const int32 StackAmount,
+		int32 Index,
+		const FInv_GridFragment* GridFragment,
+		const FInv_ImageFragment* ImageFragment);
+	void AddSlottedItemToCanvas(const int32 Index, const FInv_GridFragment* GridFragment, UInv_SlottedItem* SlottedItem) const;
+	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Inventory")
 	EInv_ItemCategory ItemCategory;
@@ -57,5 +71,11 @@ private:
 	TObjectPtr<UCanvasPanel> SlotsCanvasPanel;
 	
 	TWeakObjectPtr<UInv_InventoryComponent> InventoryComponent;
+	
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TSubclassOf<UInv_SlottedItem> SlottedItemClass;
+	
+	UPROPERTY()
+	TMap<int32, TObjectPtr<UInv_SlottedItem>> SlottedItemsMap;
 };
 

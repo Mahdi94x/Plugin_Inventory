@@ -13,6 +13,7 @@
 #include "Items/Fragments/Inv_ItemFragment.h"
 #include "Widgets/Utils/Inv_WidgetUtils.h"
 #include "Items/Manifest/Inv_ItemManifest.h"
+#include "Widgets/Inventory/SlottedItems/Inv_SlottedItem.h"
 
 void UInv_InventoryGrid::NativeOnInitialized()
 {
@@ -55,20 +56,70 @@ void UInv_InventoryGrid::AddItem(UInv_InventoryItem* InventoryItem)
 	AddItemToIndices(Result, InventoryItem);
 }
 
-void UInv_InventoryGrid::AddItemToIndices(const FInv_SlotAvailabilityResult& Result,
-	const UInv_InventoryItem* NewItem)
+bool UInv_InventoryGrid::MatchesCategory(const UInv_InventoryItem* InventoryItem) const
 {
-	// get grid fragment from the item using gameplay tags so we know how many grid spaces the item take
-	const FInv_GridFragment* GridFragment = GetFragment<FInv_GridFragment>(NewItem, FragmentTags::GridFragment);
+	return this->ItemCategory == InventoryItem->GetItemManifest().GetItemCategory();
+}
+
+void UInv_InventoryGrid::AddItemToIndices(const FInv_SlotAvailabilityResult& Result, UInv_InventoryItem* NewItem)
+{
+	for (const auto& Availability : Result.SlotAvailabilities)
+	{
+		AddItemAtIndex(NewItem, Availability.Index, Result.bStackable, Availability.AmountToFill);
+	}
 	
-	// Get image fragment so we have the icon to display
-	const FInv_ImageFragment* ImageFragment = GetFragment<FInv_ImageFragment>(NewItem, FragmentTags::IconFragment);
-	
+}
+
+void UInv_InventoryGrid::AddItemAtIndex(UInv_InventoryItem* Item, const int32 Index, const bool bStackable,
+                                        const int32 StackAmount)
+{
+	const FInv_GridFragment* GridFragment = GetFragment<FInv_GridFragment>(Item, FragmentTags::GridFragment);
+	const FInv_ImageFragment* ImageFragment = GetFragment<FInv_ImageFragment>(Item, FragmentTags::IconFragment);
 	if (!GridFragment || !ImageFragment) return;
 	
-	// Create a widget to add to the grid
-	// Store the created widget in a container for future use
+	UInv_SlottedItem* SlottedItem = CreateSlottedItem(Item, bStackable, StackAmount, Index, GridFragment, ImageFragment);
+	AddSlottedItemToCanvas(Index, GridFragment, SlottedItem);
 	
+	SlottedItemsMap.Add(Index, SlottedItem);
+}
+
+UInv_SlottedItem* UInv_InventoryGrid::CreateSlottedItem(UInv_InventoryItem* Item,const bool Stackable,
+		const int32 StackAmount, const int32 Index, const FInv_GridFragment* GridFragment,
+		const FInv_ImageFragment* ImageFragment)
+{
+	UInv_SlottedItem* SlottedItem = CreateWidget<UInv_SlottedItem>(GetOwningPlayer(), SlottedItemClass);
+	SlottedItem->SetInventoryItem(Item);
+	SetSlottedItemImage(SlottedItem, GridFragment, ImageFragment);
+	SlottedItem->SetGridIndex(Index);
+	
+	return SlottedItem;
+}
+
+void UInv_InventoryGrid::AddSlottedItemToCanvas(const int32 Index, const FInv_GridFragment* GridFragment,
+	UInv_SlottedItem* SlottedItem) const
+{
+	SlotsCanvasPanel->AddChild(SlottedItem);
+	UCanvasPanelSlot* CanvasSlot = UWidgetLayoutLibrary::SlotAsCanvasSlot(SlottedItem);
+	CanvasSlot->SetSize(GetDrawSize(GridFragment));
+	const FVector2D DrawPos = UInv_WidgetUtils::GetPositionFromIndex(Index, Columns) * TileSize;
+	const FVector2D DrawPosWithPadding = DrawPos * FVector2D(GridFragment->GetGridPadding());
+	CanvasSlot->SetPosition(DrawPosWithPadding);
+}
+
+void UInv_InventoryGrid::SetSlottedItemImage(const UInv_SlottedItem* SlottedItem, const FInv_GridFragment* GridFragment,
+                                             const FInv_ImageFragment* ImageFragment) const
+{
+	FSlateBrush Brush;
+	Brush.SetResourceObject(ImageFragment->GetIcon());
+	Brush.DrawAs = ESlateBrushDrawType::Image;
+	Brush.ImageSize = GetDrawSize(GridFragment);
+	SlottedItem->SetImageBrush(Brush);
+}
+
+FVector2D UInv_InventoryGrid::GetDrawSize(const FInv_GridFragment* GridFragment) const
+{
+	const float IconTileWidth = TileSize - GridFragment->GetGridPadding()*2;
+	return GridFragment->GetGridSize() * IconTileWidth;
 }
 
 void UInv_InventoryGrid::ConstructGridSlots()
@@ -93,11 +144,6 @@ void UInv_InventoryGrid::ConstructGridSlots()
 			
 		}
 	}
-}
-
-bool UInv_InventoryGrid::MatchesCategory(const UInv_InventoryItem* InventoryItem) const
-{
-	return this->ItemCategory == InventoryItem->GetItemManifest().GetItemCategory();
 }
 
 

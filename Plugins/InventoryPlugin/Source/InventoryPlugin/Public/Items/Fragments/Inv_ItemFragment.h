@@ -52,7 +52,7 @@ struct FInv_ImageFragment : public FInv_ItemFragmentBase
 {
 	GENERATED_BODY()
 	
-	UTexture2D* GetIcon() {return this->Icon;}
+	UTexture2D* GetIcon() const {return this->Icon;}
 	
 private:
 	
