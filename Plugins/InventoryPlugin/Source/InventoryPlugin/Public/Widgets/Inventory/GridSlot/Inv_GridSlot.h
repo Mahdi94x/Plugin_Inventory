@@ -7,6 +7,7 @@
 #include "Inv_GridSlot.generated.h"
 
 class UImage;
+class UInv_InventoryItem;
 
 UENUM(BlueprintType)
 enum class EInv_GridSlotState : uint8
@@ -25,17 +26,36 @@ class INVENTORYPLUGIN_API UInv_GridSlot : public UUserWidget
 public:
 	void SetTileIndex(const int32 Index) {this->TileIndex = Index; }
 	int32 GetTileIndex() const {return this->TileIndex;}
+	
 	EInv_GridSlotState GetGridSlotState() const {return this->GridSlotState;}
+	
 	void SetOccupiedTexture();
 	void SetUnoccupiedTexture();
 	void SetSelectedTexture();
 	void SetGrayedOutTexture();
+	
+	TWeakObjectPtr<UInv_InventoryItem> GetInventoryItem() const {return this->InventoryItem;}
+	void SetInventoryItem(UInv_InventoryItem* Item);
+	
+	int32 GetUpperLeftIndex() const {return this->UpperLeftIndex;}
+	void SetUpperLeftIndex(const int32 Index) {this->UpperLeftIndex = Index;}
+	
+	int32 GetStackCount() const {return this->StackCount;}
+	void SetStackCount(const int32 Count) {this->StackCount = Count;}
+	
+	bool GetGridSlotAvailable() const {return this->bIsGridSlotAvailable;}
+	void SetGridSlotAvailable(const bool Availability) {this->bIsGridSlotAvailable = Availability;} 
+	
 	
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Image_GridSlot;
 	
 	int32 TileIndex;
+	int32 StackCount;
+	int32 UpperLeftIndex{INDEX_NONE};
+	TWeakObjectPtr<UInv_InventoryItem> InventoryItem;
+	bool bIsGridSlotAvailable;
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	FSlateBrush Brush_Unoccupied;
