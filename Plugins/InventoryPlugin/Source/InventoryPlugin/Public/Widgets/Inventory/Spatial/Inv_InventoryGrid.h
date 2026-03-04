@@ -41,7 +41,7 @@ private:
 	void SetSlottedItemImage(const UInv_SlottedItem* SlottedItem, const FInv_GridFragment* GridFragment, const FInv_ImageFragment* ImageFragment) const;
 	void AddItemAtIndex(UInv_InventoryItem* Item, const int32 Index, const bool bStackable, const int32 StackAmount);
 	UInv_SlottedItem* CreateSlottedItem(UInv_InventoryItem* Item,
-		const bool Stackable,
+		const bool BStackable,
 		const int32 StackAmount,
 		int32 Index,
 		const FInv_GridFragment* GridFragment,
