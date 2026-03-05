@@ -22,9 +22,11 @@ struct INVENTORYPLUGIN_API FInv_ItemManifest
 	UInv_InventoryItem* ManifestCreation(UObject* NewOuter);
 	FGameplayTag GetItemType() const {return this->ItemType;}
 	
-	template<typename T>
-	requires std::derived_from<T, FInv_ItemFragmentBase>
+	template<typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const;
+	
+	template<typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
+	const T* GetFragmentOfType() const;
 
 private:
 	
@@ -38,8 +40,7 @@ private:
 	TArray<TInstancedStruct<FInv_ItemFragmentBase>> ItemFragments;
 };
 
-template<typename T>
-requires std::derived_from<T, FInv_ItemFragmentBase>
+template<typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
 	const T* FInv_ItemManifest::GetFragmentOfTypeWithTag(const FGameplayTag& FragmentTag) const
 {
 	for (const auto& Fragment : ItemFragments)
@@ -47,6 +48,19 @@ requires std::derived_from<T, FInv_ItemFragmentBase>
 		if (const T* FragmentPtr = Fragment.GetPtr<T>())
 		{
 			if (!FragmentPtr->GetFragmentTag().MatchesTagExact(FragmentTag)) continue;
+			return FragmentPtr;
+		}
+	}
+	return nullptr;
+}
+
+template <typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
+const T* FInv_ItemManifest::GetFragmentOfType() const
+{
+	for (const auto& Fragment : ItemFragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
 			return FragmentPtr;
 		}
 	}
