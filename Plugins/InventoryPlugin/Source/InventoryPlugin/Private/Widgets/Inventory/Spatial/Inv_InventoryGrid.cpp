@@ -57,6 +57,9 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_IM(const FIn
 		// Is this index claimed yet? 
 		if (IsIndexClaimed(CheckedIndices,GridSlot->GetTileIndex())) continue;
 		
+		// Is the item in grid bounds?
+		if (!IsInGridBounds(GridSlot->GetTileIndex(), GetItemDimensions(ItemManifest))) continue;
+		
 		// can the item fit here? (is it out of grid bounds?)
 		TSet<int32> TentativelyClaimed;
 		if (!HasRoomAtIndex(GridSlot, GetItemDimensions(ItemManifest),CheckedIndices, TentativelyClaimed, ItemManifest.GetItemType(), MaxStackSize))
@@ -66,7 +69,11 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_IM(const FIn
 		CheckedIndices.Append(TentativelyClaimed);
 		
 		// how much to fill?
+		const int32 AmountToFillInSlot = DetermineFillAmountForSlot(Result.bStackable,MaxStackSize,AmountToFill,GridSlot);
+		if (AmountToFillInSlot == 0) continue;
+		
 		// update the amount left to fill
+		
 	}
 		 
 	// how much is the remainder
@@ -74,11 +81,17 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_IM(const FIn
 	return Result;
 }
 
-bool UInv_InventoryGrid::HasRoomAtIndex(const UInv_GridSlot* GridSlot, const FIntPoint& Dimensions, const TSet<int32>& CheckedIndices,
-TSet<int32>& OutTentativelyClaimed, const FGameplayTag& ItemType, const int32 MaxStackSize)
+bool UInv_InventoryGrid::HasRoomAtIndex(
+		const UInv_GridSlot* GridSlot,
+		const FIntPoint& Dimensions,
+		const TSet<int32>& CheckedIndices,
+		TSet<int32>& OutTentativelyClaimed,
+		const FGameplayTag& ItemType,
+		const int32 MaxStackSize)
 {
 	// is there room at that index? (is there another item in the way?)
 	bool bHasRoomAtIndex = true;
+	
 	UInv_InventoryStatics::ForEach2D(GridSlotsArray,GridSlot->GetTileIndex(), Dimensions, Columns, [&](const UInv_GridSlot* SubGridSlot)
 	{
 		if (CheckSlotConstrains(GridSlot, SubGridSlot, CheckedIndices,OutTentativelyClaimed,ItemType, MaxStackSize))
@@ -95,12 +108,12 @@ TSet<int32>& OutTentativelyClaimed, const FGameplayTag& ItemType, const int32 Ma
 }
 
 bool UInv_InventoryGrid::CheckSlotConstrains(
-				const UInv_GridSlot* GridSlot, 
-				const UInv_GridSlot* SubGridSlot, 
-				const TSet<int32>& CheckedIndices,
-				TSet<int32>& OutTentativelyClaimed,
-				const FGameplayTag& ItemType,
-				const int32 MaxStackSize) const
+		const UInv_GridSlot* GridSlot, 
+		const UInv_GridSlot* SubGridSlot, 
+		const TSet<int32>& CheckedIndices,
+		TSet<int32>& OutTentativelyClaimed,
+		const FGameplayTag& ItemType,
+		const int32 MaxStackSize) const
 {
 	// index claimed?
 	if (IsIndexClaimed(CheckedIndices, SubGridSlot->GetTileIndex())) return false;
@@ -147,6 +160,37 @@ bool UInv_InventoryGrid::IsUpperLeftSlot(const UInv_GridSlot* GridSlot, const UI
 bool UInv_InventoryGrid::DoesItemTypeMatch(const UInv_InventoryItem* SubItem, const FGameplayTag& ItemType) const
 {
 	return SubItem->GetItemManifest().GetItemType().MatchesTagExact(ItemType);
+}
+
+bool UInv_InventoryGrid::IsInGridBounds(const int32 StartIndex, const FIntPoint& ItemDimensions) const
+{
+	if (StartIndex < 0 || StartIndex >= GridSlotsArray.Num()) return false;
+	const int32 EndColumn = (StartIndex % Columns) + ItemDimensions.X;
+	const int32 EndRow = (StartIndex / Columns) + ItemDimensions.Y;
+	return EndColumn<= Columns && EndRow <= Rows;
+}
+
+int32 UInv_InventoryGrid::DetermineFillAmountForSlot(const bool bStackable, const int32 MaxStackSize,
+	const int32 AmountToFill, const UInv_GridSlot* GridSlot) const 
+{
+	// Calculate the room in the slot
+	const int32 RoomInSlot = MaxStackSize - GetStackAmount(GridSlot); /*call the function to make sure we return the stack amount from the upper left slot*/
+	
+	// if stackable, we need the minimum between the amount to fill and room in the slot
+	return bStackable? FMath::Min(AmountToFill, RoomInSlot) : 1;
+}
+
+int32 UInv_InventoryGrid::GetStackAmount(const UInv_GridSlot* GridSlot) const
+{
+	int32 CurrentSlotStackCount = GridSlot->GetStackCount();
+	
+	// if we're at a slot that does not hold the stack count, we must get the actual stack count from the authority slot
+	if (const int32 UpperLeftIndex = GridSlot->GetUpperLeftIndex(); UpperLeftIndex != INDEX_NONE)
+	{
+		const UInv_GridSlot* UpperLeftGridSlot = GridSlotsArray[UpperLeftIndex];
+		CurrentSlotStackCount = UpperLeftGridSlot->GetStackCount();
+	}
+	return CurrentSlotStackCount;
 }
 
 void UInv_InventoryGrid::AddItem(UInv_InventoryItem* InventoryItem)
@@ -276,8 +320,3 @@ void UInv_InventoryGrid::ConstructGridSlots()
 		}
 	}
 }
-
-
-
-
-
