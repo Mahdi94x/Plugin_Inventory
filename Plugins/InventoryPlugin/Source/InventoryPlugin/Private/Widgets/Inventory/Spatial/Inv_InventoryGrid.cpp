@@ -24,6 +24,33 @@ void UInv_InventoryGrid::NativeOnInitialized()
 	
 	/*Listen to an event fired from UInv_InventoryComponent::Server_AddNewItem_Implementation*/
 	InventoryComponent->OnItemAdded.AddDynamic(this, &UInv_InventoryGrid::AddItem);
+	
+	/*Listen to an event fired from UInv_InventoryComponent::TryAddItem*/
+	InventoryComponent->OnStackChange.AddDynamic(this, &UInv_InventoryGrid::AddStacks);
+	
+}
+
+void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result)
+{
+	if (!MatchesCategory(Result.Item.Get())) return; /*Find the correct inventory*/
+	
+	for (const auto& Availability : Result.SlotAvailabilities)
+	{
+		if (Availability.bItemAtIndex)
+			/*if the item is in the provided index, just update the stack ui and inventory logic*/
+		{
+			const auto& GridSlot = GridSlotsArray[Availability.Index];
+			const auto& SlottedItem = SlottedItemsMap.FindChecked(Availability.Index);
+			SlottedItem->UpdateStackCount(GridSlot->GetStackCount() + Availability.AmountToFill);
+			GridSlot->SetStackCount(GridSlot->GetStackCount() + Availability.AmountToFill);
+		}
+		else 
+			/*if the item is not in the provided index, create the slotted item and update the grid slots*/
+		{
+			AddItemAtIndex(Result.Item.Get(), Availability.Index, Result.bStackable, Availability.AmountToFill);
+			UpdateGridSlots(Result.Item.Get(), Availability.Index, Result.bStackable, Availability.AmountToFill);
+		}
+	}
 }
 
 FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_IC(const UInv_ItemComponent* ItemComponent)
