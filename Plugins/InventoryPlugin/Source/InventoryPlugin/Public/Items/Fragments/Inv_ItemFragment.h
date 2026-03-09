@@ -70,6 +70,7 @@ struct FInv_StackableFragment : public FInv_ItemFragmentBase
 	
 	int32 GetMaxStackSize() const {return this->MaxStackSize;}
 	int32 GetStackCount() const {return this->StackCount;}
+	void SetStackCount(const int32 NewCount) {this->StackCount = NewCount;}
 	
 private:
 	

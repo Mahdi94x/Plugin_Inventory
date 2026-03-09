@@ -26,9 +26,15 @@ public:
 	FInv_ItemManifest& GetItemManifestMutable() {return ItemManifest.GetMutable<FInv_ItemManifest>();}
 	bool IsStackable() const;
 	
+	int32 GetTotalStackCount() const {return this->TotalStackCount;}
+	void SetTotalStackCount(const int32 Count) {this->TotalStackCount = Count;}
+	
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Inventory", meta = (BaseStruct = "/Script/Plugin_Inventory.Inv_ItemManifest"), Replicated)
 	FInstancedStruct ItemManifest;
+	
+	UPROPERTY(Replicated)
+	int32 TotalStackCount{0};
 };
 
 template <typename FragmentType>

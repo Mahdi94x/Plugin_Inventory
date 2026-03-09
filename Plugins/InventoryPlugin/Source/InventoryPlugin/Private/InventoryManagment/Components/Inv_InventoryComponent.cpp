@@ -6,6 +6,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
 #include "Items/Inv_InventoryItem.h"
+#include "Items/Fragments/Inv_ItemFragment.h"
 
 UInv_InventoryComponent::UInv_InventoryComponent() : InventoryFaList(this)
 {
@@ -76,15 +77,26 @@ void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponen
 		OnItemAdded.Broadcast(NewInventoryItem);
 	}
 	
-	// TODO: Tell the Inv_ItemComponent to destroy its owning actor in the world
+	NewInventoryItem->SetTotalStackCount(StackCount);
+	
+	ItemComponent->PickedUp();
 }
 
 void UInv_InventoryComponent::Server_AddStacksToItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount,
 	int32 Remainder)
 {
-	if (GEngine)
+	const FGameplayTag& ItemType = IsValid(ItemComponent) ? ItemComponent->GetItemComponent_Manifest().GetItemType() : FGameplayTag::EmptyTag; 
+	UInv_InventoryItem* SearchedInventoryItem = InventoryFaList.FindFirstItemByType(ItemType);
+	if (!IsValid(SearchedInventoryItem)) return;
+	SearchedInventoryItem->SetTotalStackCount(SearchedInventoryItem->GetTotalStackCount() + StackCount);
+	
+	if (Remainder == 0)
 	{
-		GEngine->AddOnScreenDebugMessage(1,5.f,FColor::Red,FString("UInv_InventoryComponent::Server_AddStacksToItem_Implementation"));
+		ItemComponent->PickedUp();
+	}
+	else if (FInv_StackableFragment* StackableFragment = ItemComponent->GetItemComponent_Manifest().GetFragmentOfTypeMutable<FInv_StackableFragment>())
+	{
+		StackableFragment->SetStackCount(Remainder); /*updating the stack count of the Actor in the world, not the inventory item*/
 	}
 }
 

@@ -18,6 +18,10 @@ public:
 	FString GetPickupMessage() const {return this->PickupMessage;}
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	FInv_ItemManifest GetItemComponent_Manifest() const {return this->ItemComponent_Manifest;}
+	void PickedUp();
+	
+	UFUNCTION(BlueprintImplementableEvent, Category = "Inventory") 
+	void OnPickedUp(); 
 
 protected:
 

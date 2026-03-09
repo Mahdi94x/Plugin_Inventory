@@ -27,6 +27,9 @@ struct INVENTORYPLUGIN_API FInv_ItemManifest
 	
 	template<typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
 	const T* GetFragmentOfType() const;
+	
+	template<typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
+	T* GetFragmentOfTypeMutable();
 
 private:
 	
@@ -57,7 +60,7 @@ template<typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
 template <typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
 const T* FInv_ItemManifest::GetFragmentOfType() const
 {
-	for (const auto& Fragment : ItemFragments)
+	for (const TInstancedStruct<FInv_ItemFragmentBase>& Fragment : ItemFragments)
 	{
 		if (const T* FragmentPtr = Fragment.GetPtr<T>())
 		{
@@ -67,3 +70,15 @@ const T* FInv_ItemManifest::GetFragmentOfType() const
 	return nullptr;
 }
 
+template<typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
+T* FInv_ItemManifest::GetFragmentOfTypeMutable()
+{
+	for (TInstancedStruct<FInv_ItemFragmentBase>& Fragment : ItemFragments)
+	{
+		if (T* FragmentPtr = Fragment.GetMutablePtr<T>())
+		{
+			return FragmentPtr;
+		}
+	}
+	return nullptr;
+}
