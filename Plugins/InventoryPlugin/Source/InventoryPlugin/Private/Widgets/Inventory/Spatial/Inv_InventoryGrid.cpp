@@ -18,9 +18,11 @@
 void UInv_InventoryGrid::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-	ConstructGridSlots();
 	
+	ConstructGridSlots();
 	InventoryComponent = UInv_InventoryStatics::GetInventoryComponent(GetOwningPlayer());
+	
+	/*Listen to an event fired from UInv_InventoryComponent::Server_AddNewItem_Implementation*/
 	InventoryComponent->OnItemAdded.AddDynamic(this, &UInv_InventoryGrid::AddItem);
 }
 

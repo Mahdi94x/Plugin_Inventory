@@ -4,6 +4,7 @@
 #include "Net/Serialization/FastArraySerializer.h"
 #include "Inv_FastArray.generated.h"
 
+struct FGameplayTag;
 class UInv_ItemComponent;
 class UInv_InventoryComponent;
 class UInv_InventoryItem;
@@ -46,6 +47,7 @@ struct FInv_InventoryFastArray : public FFastArraySerializer
 	UInv_InventoryItem* AddEntry(UInv_ItemComponent* ItemComponent);
 	UInv_InventoryItem* AddEntry(UInv_InventoryItem* InventoryItem);
 	void RemoveEntry(UInv_InventoryItem* InventoryItem);
+	UInv_InventoryItem* FindFirstItemByType(const FGameplayTag& ItemType);
 
 private:
 	
@@ -60,7 +62,7 @@ private:
 	TObjectPtr<UActorComponent> OwnerComponent;
 };
 
-template<> /* Set a flag that this type (FInv_InventoryFasTArray) should be delta serialized*/
+template<> /* Set a flag that this type (FInv_InventoryFastArray) should be delta serialized*/
 struct TStructOpsTypeTraits<FInv_InventoryFastArray> : TStructOpsTypeTraitsBase2<FInv_InventoryFastArray>
 {
 	enum {WithNetDeltaSerializer = true};

@@ -2,7 +2,7 @@
 
 #include "Inv_GridTypes.generated.h"
 
-class FInv_InventoryItem;
+class UInv_InventoryItem;
 
 UENUM(BlueprintType)
 enum class EInv_ItemCategory : uint8
@@ -34,7 +34,7 @@ struct FInv_SlotAvailabilityResult /** Results of the slots in the entire grid*/
 	
 	FInv_SlotAvailabilityResult() {}
 	
-	TWeakObjectPtr<FInv_InventoryItem> Item; /**Weak pointer to the item if it exists*/
+	TWeakObjectPtr<UInv_InventoryItem> Item; /**Weak pointer to the item if it exists*/
 	bool bStackable{false}; /**Is this item stackable or not?*/
 	int32 TotalRoomToFill{0}; /**Number of items that can fit in the grid, if it equals 0, there is no room*/
 	int32 Remainder{0};/**Number of items that can't fit*/

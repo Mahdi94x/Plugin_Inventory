@@ -2,8 +2,10 @@
 
 #include "InventoryManagment/Components/Inv_InventoryComponent.h"
 
+#include "Items/Components/Inv_ItemComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
+#include "Items/Inv_InventoryItem.h"
 
 UInv_InventoryComponent::UInv_InventoryComponent() : InventoryFaList(this)
 {
@@ -29,6 +31,9 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent)
 {
 	FInv_SlotAvailabilityResult Result = InventoryMenu->HasRoomForItem(ItemComponent);
 	
+	UInv_InventoryItem* FoundItem = InventoryFaList.FindFirstItemByType(ItemComponent->GetItemComponent_Manifest().GetItemType());
+	Result.Item = FoundItem;
+	
 	if (Result.TotalRoomToFill == 0)
 	{
 		NoRoomInInventory.Broadcast();
@@ -46,7 +51,6 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent)
 		// this item does not exist in the inventory and update all pertinent slots
 		Server_AddNewItem(ItemComponent, Result.bStackable ? Result.TotalRoomToFill : 0 );
 	}
-	
 }
 
 void UInv_InventoryComponent::AddRepSubObj(UObject* SubObj)
@@ -72,13 +76,16 @@ void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponen
 		OnItemAdded.Broadcast(NewInventoryItem);
 	}
 	
-	// TODO: Tell the Inv_ItemComponent to destroy its owning actor
+	// TODO: Tell the Inv_ItemComponent to destroy its owning actor in the world
 }
 
 void UInv_InventoryComponent::Server_AddStacksToItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount,
 	int32 Remainder)
 {
-	
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1,5.f,FColor::Red,FString("UInv_InventoryComponent::Server_AddStacksToItem_Implementation"));
+	}
 }
 
 void UInv_InventoryComponent::BeginPlay()
@@ -126,7 +133,3 @@ void UInv_InventoryComponent::CloseInventoryMenu()
 	OwningController->SetInputMode(InputMode);
 	OwningController->SetShowMouseCursor(false);
 }
-
-
-
-
