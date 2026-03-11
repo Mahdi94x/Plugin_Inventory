@@ -53,6 +53,11 @@ void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result)
 	}
 }
 
+void UInv_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	if (GEngine) GEngine->AddOnScreenDebugMessage(1,5.f,FColor::Red,FString::Printf(TEXT("Clicked on item at index %d"),GridIndex));
+}
+
 FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_IC(const UInv_ItemComponent* ItemComponent)
 {
 	return HasRoomForItem_Grid_IM(ItemComponent->GetItemComponent_Manifest());
@@ -282,6 +287,7 @@ UInv_SlottedItem* UInv_InventoryGrid::CreateSlottedItem(UInv_InventoryItem* Item
 	SlottedItem->SetIsStackable(BStackable);
 	const int32 StackUpdateAmount = BStackable ? StackAmount : 0;
 	SlottedItem->UpdateStackCount(StackUpdateAmount);
+	SlottedItem->OnSlottedItemClicked.AddDynamic(this, &ThisClass::OnSlottedItemClicked);
 	
 	return SlottedItem;
 }
