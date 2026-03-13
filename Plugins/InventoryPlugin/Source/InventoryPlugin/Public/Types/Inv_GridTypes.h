@@ -39,5 +39,35 @@ struct FInv_SlotAvailabilityResult /** Results of the slots in the entire grid*/
 	int32 TotalRoomToFill{0}; /**Number of items that can fit in the grid, if it equals 0, there is no room*/
 	int32 Remainder{0};/**Number of items that can't fit*/
 	TArray<FInv_SlotAvailability> SlotAvailabilities; /**List of all the slots that needs updating*/
-	
 };
+
+UENUM(BlueprintType)
+enum class EInv_TileQuadrant : uint8
+{
+	TopLeft,
+	TopRight,
+	BottomLeft,
+	BottomRight,
+	None
+};
+
+USTRUCT(BlueprintType)
+struct FInv_TileParameters
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+	FIntPoint TileCoordinates{};
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+	int32 TileIndex{INDEX_NONE};
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
+	EInv_TileQuadrant TileQuadrant{EInv_TileQuadrant::None};
+};
+
+inline bool operator==(const FInv_TileParameters* A, const FInv_TileParameters* B)
+{
+	return A->TileIndex == B->TileIndex &&
+		A->TileCoordinates == B->TileCoordinates && A->TileQuadrant == B->TileQuadrant;
+}

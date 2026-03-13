@@ -116,5 +116,8 @@ private:
 	
 	UPROPERTY()
 	TObjectPtr<UInv_HoverItem> HoverItem;
+	
+	FInv_TileParameters CurrentFrameTileParameters;
+	FInv_TileParameters LastFrameTileParameters;
 };
 
