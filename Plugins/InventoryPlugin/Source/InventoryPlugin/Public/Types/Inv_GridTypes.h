@@ -66,8 +66,7 @@ struct FInv_TileParameters
 	EInv_TileQuadrant TileQuadrant{EInv_TileQuadrant::None};
 };
 
-inline bool operator==(const FInv_TileParameters* A, const FInv_TileParameters* B)
+inline bool operator==(const FInv_TileParameters& A, const FInv_TileParameters& B)
 {
-	return A->TileIndex == B->TileIndex &&
-		A->TileCoordinates == B->TileCoordinates && A->TileQuadrant == B->TileQuadrant;
+	return A.TileIndex == B.TileIndex && A.TileCoordinates == B.TileCoordinates && A.TileQuadrant == B.TileQuadrant;
 }
