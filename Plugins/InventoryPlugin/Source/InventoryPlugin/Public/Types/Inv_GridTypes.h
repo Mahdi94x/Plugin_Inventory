@@ -70,3 +70,18 @@ inline bool operator==(const FInv_TileParameters& A, const FInv_TileParameters& 
 {
 	return A.TileIndex == B.TileIndex && A.TileCoordinates == B.TileCoordinates && A.TileQuadrant == B.TileQuadrant;
 }
+
+USTRUCT()
+struct FInv_SpaceQueryResult
+{
+	GENERATED_BODY()
+	
+	// True if the space queried has no items in it
+	bool bHasSpace{false};
+	
+	// valid if there's a single item we can swap with
+	TWeakObjectPtr<UInv_InventoryItem> ValidInventoryItem{nullptr};
+	
+	// Upper left index of the valid item, if there's one
+	int32 UpperLeftIndex{INDEX_NONE};
+};

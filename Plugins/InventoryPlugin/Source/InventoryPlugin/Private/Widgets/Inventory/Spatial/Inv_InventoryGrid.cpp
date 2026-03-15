@@ -70,14 +70,23 @@ void UInv_InventoryGrid::OnTileParametersUpdated(const FInv_TileParameters& Para
 	
 	// Calculate the starting coordinates for highlighting
 	const FIntPoint StartingCoordinate = CalculateStartingCoordinate(Parameters.TileCoordinates, HoverItemDimensions, Parameters.TileQuadrant);
+	ItemDropIndex = UInv_WidgetUtils::GetIndexFromPosition(StartingCoordinate, Columns);
+	
 	// Check hover position
-		// in the grid bounds?
-		// any items in the way?
-		// how many items in the way? (only one we can swap)
-		
+	CurrentQueryResult = CheckHoverPosition(StartingCoordinate, HoverItemDimensions);
+	
 }
 
-FIntPoint UInv_InventoryGrid::CalculateStartingCoordinate(const FIntPoint& TileCoordinate, const FIntPoint& ItemDimensions , const EInv_TileQuadrant TileQuadrant) const
+FInv_SpaceQueryResult UInv_InventoryGrid::CheckHoverPosition(const FIntPoint& Position, const FIntPoint& Dimensions)
+{
+	FInv_SpaceQueryResult Result;
+		// in the grid bounds?
+		// any items in the way?
+		// how many items in the way? (only one then we can swap)
+	return Result;
+}
+
+FIntPoint UInv_InventoryGrid::CalculateStartingCoordinate(const FIntPoint& CurrentTileCoordinate, const FIntPoint& ItemDimensions , const EInv_TileQuadrant TileQuadrant) const
 {
 	const int32 HasEvenWidth = ItemDimensions.X % 2 == 0 ? 1 : 0;
 	const int32 HasEvenHeight = ItemDimensions.Y % 2 == 0 ? 1 : 0;
@@ -86,23 +95,23 @@ FIntPoint UInv_InventoryGrid::CalculateStartingCoordinate(const FIntPoint& TileC
 	switch (TileQuadrant)
 	{
 	case EInv_TileQuadrant::TopLeft:
-		StartingCord.X = TileCoordinate.X - FMath::FloorToInt(0.5 * ItemDimensions.X);
-		StartingCord.Y = TileCoordinate.Y - FMath::FloorToInt(0.5 * ItemDimensions.Y);
+		StartingCord.X = CurrentTileCoordinate.X - FMath::FloorToInt(0.5 * ItemDimensions.X);
+		StartingCord.Y = CurrentTileCoordinate.Y - FMath::FloorToInt(0.5 * ItemDimensions.Y);
 		break;
 		
 	case EInv_TileQuadrant::TopRight:
-		StartingCord.X = TileCoordinate.X - FMath::FloorToInt(0.5 * ItemDimensions.X) + HasEvenWidth;
-		StartingCord.Y = TileCoordinate.Y - FMath::FloorToInt(0.5 * ItemDimensions.Y);
+		StartingCord.X = CurrentTileCoordinate.X - FMath::FloorToInt(0.5 * ItemDimensions.X) + HasEvenWidth;
+		StartingCord.Y = CurrentTileCoordinate.Y - FMath::FloorToInt(0.5 * ItemDimensions.Y);
 		break;
 		
 	case EInv_TileQuadrant::BottomLeft:
-		StartingCord.X = TileCoordinate.X - FMath::FloorToInt(0.5 * ItemDimensions.X);
-		StartingCord.Y = TileCoordinate.Y - FMath::FloorToInt(0.5 * ItemDimensions.Y) + HasEvenHeight;
+		StartingCord.X = CurrentTileCoordinate.X - FMath::FloorToInt(0.5 * ItemDimensions.X);
+		StartingCord.Y = CurrentTileCoordinate.Y - FMath::FloorToInt(0.5 * ItemDimensions.Y) + HasEvenHeight;
 		break;
 		
 	case EInv_TileQuadrant::BottomRight:
-		StartingCord.X = TileCoordinate.X - FMath::FloorToInt(0.5 * ItemDimensions.X) + HasEvenWidth;
-		StartingCord.Y = TileCoordinate.Y - FMath::FloorToInt(0.5 * ItemDimensions.Y) + HasEvenHeight;
+		StartingCord.X = CurrentTileCoordinate.X - FMath::FloorToInt(0.5 * ItemDimensions.X) + HasEvenWidth;
+		StartingCord.Y = CurrentTileCoordinate.Y - FMath::FloorToInt(0.5 * ItemDimensions.Y) + HasEvenHeight;
 		break;
 		
 	default: 
