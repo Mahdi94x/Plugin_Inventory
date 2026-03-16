@@ -40,14 +40,16 @@ void UInv_InventoryGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	const FVector2d CanvasPosition = UInv_WidgetUtils::GetWidgetPosition(SlotsCanvasPanel);
 	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer());
 	
+	if (CursorExistedCanvas(CanvasPosition, UInv_WidgetUtils::GetWidgetSize(SlotsCanvasPanel), MousePosition))
+	{
+		//TODO:  unhighlight all slots
+		return;
+	}
 	UpdateTileParameters(CanvasPosition,MousePosition);
-	
 }
 
 void UInv_InventoryGrid::UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition)
 {
-	// if mouse not in canvas panel return early
-	
 	// Calculate the tile quadrant, index and coordinates
 	const FIntPoint HoveredTileCoordinates = CalculateHoveredCoordinates(CanvasPosition, MousePosition);
 	
@@ -59,7 +61,6 @@ void UInv_InventoryGrid::UpdateTileParameters(const FVector2D& CanvasPosition, c
 	// handle highlight and unhighlight of the grid slot
 	OnTileParametersUpdated(CurrentFrameTileParameters);
 }
-
 
 void UInv_InventoryGrid::OnTileParametersUpdated(const FInv_TileParameters& Parameters)
 {
@@ -107,6 +108,19 @@ FInv_SpaceQueryResult UInv_InventoryGrid::CheckHoverPosition(const FIntPoint& Po
 		
 	}
 	return Result;
+}
+
+bool UInv_InventoryGrid::CursorExistedCanvas(const FVector2D& BoundaryPos, const FVector2D& BoundarySize,
+	const FVector2D& MouseLocation)
+{
+	bLastMouseWithInCanvas = bMouseWithInCanvas;
+	bMouseWithInCanvas = UInv_WidgetUtils::IsWithinBounds(BoundaryPos, BoundarySize, MouseLocation);
+	if (!bMouseWithInCanvas && bLastMouseWithInCanvas)
+	{
+		//TODO: Unhighlight all slots
+		return true;
+	}
+	return false;
 }
 
 FIntPoint UInv_InventoryGrid::CalculateStartingCoordinate(const FIntPoint& CurrentTileCoordinate, const FIntPoint& ItemDimensions , const EInv_TileQuadrant TileQuadrant) const

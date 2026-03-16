@@ -82,6 +82,7 @@ private:
 	void OnTileParametersUpdated(const FInv_TileParameters& Parameters);
 	FIntPoint CalculateStartingCoordinate(const FIntPoint& CurrentTileCoordinate, const FIntPoint& ItemDimensions , const EInv_TileQuadrant TileQuadrant) const;
 	FInv_SpaceQueryResult CheckHoverPosition(const FIntPoint& Position, const FIntPoint& Dimensions);
+	bool CursorExistedCanvas(const FVector2D & BoundaryPos, const FVector2D& BoundarySize, const FVector2D& MouseLocation);
 	
 	UFUNCTION()
 	void AddStacks(const FInv_SlotAvailabilityResult& Result);
@@ -131,5 +132,8 @@ private:
 	int32 ItemDropIndex{INDEX_NONE};
 	
 	FInv_SpaceQueryResult CurrentQueryResult;
+	
+	bool bMouseWithInCanvas;
+	bool bLastMouseWithInCanvas;
 };
 
