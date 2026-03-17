@@ -8,6 +8,7 @@
 #include "Types/Inv_GridTypes.h"
 #include "Inv_InventoryGrid.generated.h"
 
+enum class EInv_GridSlotState : uint8;
 class UInv_HoverItem;
 class UInv_SlottedItem;
 struct FInv_ItemManifest;
@@ -83,6 +84,9 @@ private:
 	FIntPoint CalculateStartingCoordinate(const FIntPoint& CurrentTileCoordinate, const FIntPoint& ItemDimensions , const EInv_TileQuadrant TileQuadrant) const;
 	FInv_SpaceQueryResult CheckHoverPosition(const FIntPoint& Position, const FIntPoint& Dimensions);
 	bool CursorExistedCanvas(const FVector2D & BoundaryPos, const FVector2D& BoundarySize, const FVector2D& MouseLocation);
+	void HighlightSlots(const int32 Index, const FIntPoint& Dimensions);
+	void UnhighlightSlots(const int32 Index, const FIntPoint& Dimensions);
+	void ChangeHoverType(const int32 Index, const FIntPoint& Dimensions, EInv_GridSlotState GridSlotState); 
 	
 	UFUNCTION()
 	void AddStacks(const FInv_SlotAvailabilityResult& Result);
@@ -135,5 +139,7 @@ private:
 	
 	bool bMouseWithInCanvas;
 	bool bLastMouseWithInCanvas;
+	int32 LastHighlightedIndex;
+	FIntPoint LastHighlightedDimensions;
 };
 
