@@ -671,7 +671,35 @@ void UInv_InventoryGrid::ConstructGridSlots()
 			GridCps->SetPosition(TilePosition*TileSize);
 			
 			GridSlotsArray.Add(GridSlot);
-			
+			/*Bind to the events fired from Inv_GridSlot*/
+			GridSlot->GridSlotClicked.AddDynamic(this, &ThisClass::UInv_InventoryGrid::OnGridSlotClicked);
+			GridSlot->GridSlotHovered.AddDynamic(this, &ThisClass::UInv_InventoryGrid::OnGridSlotHovered);
+			GridSlot->GridSlotUnhovered.AddDynamic(this, &ThisClass::UInv_InventoryGrid::OnGridSlotUnhovered);
 		}
+	}
+}
+
+void UInv_InventoryGrid::OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	
+}
+
+void UInv_InventoryGrid::OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	if (IsValid(HoverItem)) return;
+	UInv_GridSlot* GridSlot = GridSlotsArray[GridIndex];
+	if (GridSlot->GetGridSlotAvailable())
+	{
+		GridSlot->SetOccupiedTexture();
+	}
+}
+
+void UInv_InventoryGrid::OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent)
+{
+	if (IsValid(HoverItem)) return;
+	UInv_GridSlot* GridSlot = GridSlotsArray[GridIndex];
+	if (GridSlot->GetGridSlotAvailable())
+	{
+		GridSlot->SetUnoccupiedTexture();
 	}
 }

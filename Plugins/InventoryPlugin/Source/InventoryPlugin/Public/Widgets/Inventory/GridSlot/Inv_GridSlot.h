@@ -9,6 +9,8 @@
 class UImage;
 class UInv_InventoryItem;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGridSlotEvent, int32, GridIndex, const FPointerEvent&, MouseEvent);
+
 UENUM(BlueprintType)
 enum class EInv_GridSlotState : uint8
 {
@@ -24,6 +26,10 @@ class INVENTORYPLUGIN_API UInv_GridSlot : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	
 	void SetTileIndex(const int32 Index) {this->TileIndex = Index; }
 	int32 GetTileIndex() const {return this->TileIndex;}
 	
@@ -46,7 +52,10 @@ public:
 	bool GetGridSlotAvailable() const {return this->bIsGridSlotAvailable;}
 	void SetGridSlotAvailable(const bool Availability) {this->bIsGridSlotAvailable = Availability;} 
 	
-	
+	FGridSlotEvent GridSlotClicked;
+	FGridSlotEvent GridSlotHovered;
+	FGridSlotEvent GridSlotUnhovered;
+
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Image_GridSlot;
