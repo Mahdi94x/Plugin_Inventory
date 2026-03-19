@@ -54,4 +54,6 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> Button_Craftables;
 	
+	TWeakObjectPtr<UInv_InventoryGrid> ActiveGrid;
+	
 };
