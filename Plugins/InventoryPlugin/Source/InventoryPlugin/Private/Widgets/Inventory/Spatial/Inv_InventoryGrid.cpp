@@ -286,7 +286,35 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEve
 	if (!IsValid(HoverItem) && IsLeftClicked(MouseEvent))
 	{
 		PickUp(ClickedInventoryItem, GridIndex);
+		return;
 	}
+	// do the hover item and the clicked inventory item share the same type and stackable? (Stacking or combining cases)
+	if (IsSameStackable(ClickedInventoryItem))
+	{
+		// should we swap their stack count?
+		// should we consume the hover item's stacks?
+		// should we fill in the stacks of the clicked item? (and not consume the hover item)
+		// is there no room in the clicked slot?
+		return;
+	}
+	// swap with the hover item? (Swapping Case)
+	SwapWithHoverItem(ClickedInventoryItem, GridIndex);
+	
+}
+
+void UInv_InventoryGrid::SwapWithHoverItem(UInv_InventoryItem* ClickedInventoryItem, const int32 GridIndex)
+{
+	if (!IsValid(HoverItem)) return;
+	
+	UInv_InventoryItem* TempInventoryItem = HoverItem->GetInventoryItem();
+	const int32 TempStackCount = HoverItem->GetStackCount();
+	const bool bTempIsStackable = HoverItem->IsStackable();
+	
+	// keep the same previous grid index
+	AssignHoverItem(ClickedInventoryItem, GridIndex, HoverItem->GetPreviousGridIndex());
+	RemoveItemFromGrid(ClickedInventoryItem, GridIndex);
+	AddItemAtIndex(TempInventoryItem, ItemDropIndex, bTempIsStackable, TempStackCount);
+	UpdateGridSlots(TempInventoryItem,ItemDropIndex,bTempIsStackable, TempStackCount);
 }
 
 bool UInv_InventoryGrid::IsRightClicked(const FPointerEvent& MouseEvent) const
@@ -736,6 +764,13 @@ UUserWidget* UInv_InventoryGrid::GetHiddenCursorWidget() /*Lazy Loading Function
 		HiddenCursorWidget = CreateWidget<UUserWidget>(GetOwningPlayer(), HiddenCursorWidgetClass);
 	}
 	return HiddenCursorWidget;
+}
+
+bool UInv_InventoryGrid::IsSameStackable(const UInv_InventoryItem* ClickedInventoryItem) const
+{
+	const bool bIsSameItem = ClickedInventoryItem == HoverItem->GetInventoryItem();
+	const bool bIsStackable = ClickedInventoryItem->IsStackable();
+	return bIsSameItem && bIsStackable && HoverItem->GetItemType().MatchesTagExact(ClickedInventoryItem->GetItemManifest().GetItemType());
 }
 
 void UInv_InventoryGrid::ShowCursor()
