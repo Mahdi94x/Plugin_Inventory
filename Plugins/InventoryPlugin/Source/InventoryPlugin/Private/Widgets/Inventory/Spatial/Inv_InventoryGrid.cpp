@@ -291,7 +291,18 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEve
 	// do the hover item and the clicked inventory item share the same type and stackable? (Stacking or combining cases)
 	if (IsSameStackable(ClickedInventoryItem))
 	{
-		// should we swap their stack count?
+		const int32 ClickedStackCount = GridSlotsArray[GridIndex]->GetStackCount();
+		const FInv_StackableFragment* StackableFragment = ClickedInventoryItem->GetItemManifest().GetFragmentOfType<FInv_StackableFragment>();
+		const int32 MaxStackSize = StackableFragment->GetMaxStackSize();
+		const int32 RoomInClickedSlot = MaxStackSize - ClickedStackCount;
+		const int32 HoveredStackCount = HoverItem->GetStackCount();
+		
+		// should we swap their stack count? (Room In Clicked Slot == 0 && HoverStackCount < Max Stack Size)
+		if (ShouldSwapStackCounts(RoomInClickedSlot, HoveredStackCount,MaxStackSize ))
+		{
+			// Swap Stack Counts
+			SwapStackCounts(ClickedStackCount, HoveredStackCount, GridIndex);
+		}
 		// should we consume the hover item's stacks?
 		// should we fill in the stacks of the clicked item? (and not consume the hover item)
 		// is there no room in the clicked slot?
@@ -315,6 +326,24 @@ void UInv_InventoryGrid::SwapWithHoverItem(UInv_InventoryItem* ClickedInventoryI
 	RemoveItemFromGrid(ClickedInventoryItem, GridIndex);
 	AddItemAtIndex(TempInventoryItem, ItemDropIndex, bTempIsStackable, TempStackCount);
 	UpdateGridSlots(TempInventoryItem,ItemDropIndex,bTempIsStackable, TempStackCount);
+}
+
+bool UInv_InventoryGrid::ShouldSwapStackCounts(const int32 RoomInClickedSlot, const int32 HoverStackCount,
+	const int32 MaxStackSize) const
+{
+	return RoomInClickedSlot == 0 && HoverStackCount < MaxStackSize;
+}
+
+void UInv_InventoryGrid::SwapStackCounts(const int32 ClickedStackCount, const int32 HoveredStackCount,
+	const int32 Index)
+{
+	UInv_GridSlot* GridSlot = GridSlotsArray[Index];
+	GridSlot->SetStackCount(HoveredStackCount);
+	
+	UInv_SlottedItem* ClickedSlottedItem = SlottedItemsMap.FindChecked(Index);
+	ClickedSlottedItem->UpdateStackCount(HoveredStackCount);
+	
+	HoverItem->UpdateStackCount(ClickedStackCount);
 }
 
 bool UInv_InventoryGrid::IsRightClicked(const FPointerEvent& MouseEvent) const
