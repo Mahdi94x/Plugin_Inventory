@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Widgets/Inventory/Spatial/Inv_InventoryGrid.h"
-
 #include "InventoryPlugin.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanelSlot.h"
@@ -300,21 +299,34 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEve
 		// should we swap their stack count? (Room In Clicked Slot == 0 && HoverStackCount < Max Stack Size)
 		if (ShouldSwapStackCounts(RoomInClickedSlot, HoveredStackCount,MaxStackSize))
 		{
-			// Swap Stack Counts
 			SwapStackCounts(ClickedStackCount, HoveredStackCount, GridIndex);
+			return;
 		}
+		
 		// should we consume the hover item's stacks? (Room in clicked slot >= Hovered stack count)
 		if (ShouldConsumeHoverItemStacks(HoveredStackCount,RoomInClickedSlot))
 		{
 			ConsumeHoverItemStacks(ClickedStackCount,HoveredStackCount, GridIndex);
+			return;
 		}
+		
 		// should we fill in the stacks of the clicked item? (and not consume the hover item)
-		// is there no room in the clicked slot?
-		return;
+		if (ShouldFillInStack(RoomInClickedSlot,HoveredStackCount))
+		{
+			FillInStack(RoomInClickedSlot, HoveredStackCount - RoomInClickedSlot, GridIndex);
+			return;
+		}
+		
+		// is there no room in the clicked slot? (Do Nothing)
+		if (RoomInClickedSlot == 0)
+		{
+			return;
+		}
+	
 	}
+	
 	// swap with the hover item? (Swapping Case)
 	SwapWithHoverItem(ClickedInventoryItem, GridIndex);
-	
 }
 
 void UInv_InventoryGrid::SwapWithHoverItem(UInv_InventoryItem* ClickedInventoryItem, const int32 GridIndex)
@@ -369,6 +381,23 @@ void UInv_InventoryGrid::ConsumeHoverItemStacks(const int32 ClickedStackCount, c
 	const FIntPoint Dimensions = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1,1);
 	HighlightSlots(Index,Dimensions);
 	
+}
+
+bool UInv_InventoryGrid::ShouldFillInStack(const int32 RoomInClickedSlot, const int32 HoveredStackCount) const
+{
+	return RoomInClickedSlot < HoveredStackCount;
+}
+
+void UInv_InventoryGrid::FillInStack(const int32 FillAmount, const int32 Remainder, const int32 Index)
+{
+	UInv_GridSlot* GridSlot = GridSlotsArray[Index];
+	const int32 NewStackCount = GridSlot->GetStackCount() + FillAmount;
+	GridSlot->SetStackCount(NewStackCount);
+	
+	UInv_SlottedItem* ClickedSlottedItem = SlottedItemsMap.FindChecked(Index);
+	ClickedSlottedItem->UpdateStackCount(NewStackCount);
+	
+	if (HoverItem) HoverItem->UpdateStackCount(Remainder);
 }
 
 bool UInv_InventoryGrid::IsRightClicked(const FPointerEvent& MouseEvent) const
