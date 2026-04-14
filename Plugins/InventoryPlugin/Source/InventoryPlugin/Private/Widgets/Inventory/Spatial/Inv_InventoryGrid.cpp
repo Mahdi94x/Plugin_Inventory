@@ -298,12 +298,16 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEve
 		const int32 HoveredStackCount = HoverItem->GetStackCount();
 		
 		// should we swap their stack count? (Room In Clicked Slot == 0 && HoverStackCount < Max Stack Size)
-		if (ShouldSwapStackCounts(RoomInClickedSlot, HoveredStackCount,MaxStackSize ))
+		if (ShouldSwapStackCounts(RoomInClickedSlot, HoveredStackCount,MaxStackSize))
 		{
 			// Swap Stack Counts
 			SwapStackCounts(ClickedStackCount, HoveredStackCount, GridIndex);
 		}
-		// should we consume the hover item's stacks?
+		// should we consume the hover item's stacks? (Room in clicked slot >= Hovered stack count)
+		if (ShouldConsumeHoverItemStacks(HoveredStackCount,RoomInClickedSlot))
+		{
+			ConsumeHoverItemStacks(ClickedStackCount,HoveredStackCount, GridIndex);
+		}
 		// should we fill in the stacks of the clicked item? (and not consume the hover item)
 		// is there no room in the clicked slot?
 		return;
@@ -344,6 +348,27 @@ void UInv_InventoryGrid::SwapStackCounts(const int32 ClickedStackCount, const in
 	ClickedSlottedItem->UpdateStackCount(HoveredStackCount);
 	
 	HoverItem->UpdateStackCount(ClickedStackCount);
+}
+
+bool UInv_InventoryGrid::ShouldConsumeHoverItemStacks(const int32 HoveredStackCount,
+	const int32 RoomInClickedSlot) const
+{
+	return RoomInClickedSlot >= HoveredStackCount;
+}
+
+void UInv_InventoryGrid::ConsumeHoverItemStacks(const int32 ClickedStackCount, const int32 HoveredStackCount,
+	const int32 Index)
+{
+	const int32 AmountToTransfer = HoveredStackCount;
+	const int32 NewClickedStackCount = ClickedStackCount + AmountToTransfer;
+	GridSlotsArray[Index]->SetStackCount(NewClickedStackCount);
+	SlottedItemsMap.FindChecked(Index)->UpdateStackCount(NewClickedStackCount);
+	ClearHoverItem();
+	ShowCursor();
+	const FInv_GridFragment* GridFragment = GridSlotsArray[Index]->GetInventoryItem()->GetItemManifest().GetFragmentOfType<FInv_GridFragment>();
+	const FIntPoint Dimensions = GridFragment ? GridFragment->GetGridSize() : FIntPoint(1,1);
+	HighlightSlots(Index,Dimensions);
+	
 }
 
 bool UInv_InventoryGrid::IsRightClicked(const FPointerEvent& MouseEvent) const
@@ -483,7 +508,7 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_IM(const FIn
 		
 		AmountToFill -= AmountToFillInSlot;
 		
-		// how much is the remainder
+		// how much is the remainder?
 		Result.Remainder = AmountToFill;
 		if (AmountToFill == 0) return Result;
 	}
