@@ -57,8 +57,6 @@ private:
 	UFUNCTION()
 	void OnSliderValueChanged(float Value);
 	
-	
-	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> Button_Split;
 	
