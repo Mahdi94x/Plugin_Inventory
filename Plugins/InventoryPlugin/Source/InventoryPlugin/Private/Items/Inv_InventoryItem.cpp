@@ -22,3 +22,8 @@ bool UInv_InventoryItem::IsStackable() const
 	const FInv_StackableFragment* StackableFragment = GetItemManifest().GetFragmentOfType<FInv_StackableFragment>();
 	return StackableFragment!= nullptr;
 }
+
+bool UInv_InventoryItem::IsConsumable() const
+{
+	return this->GetItemManifest().GetItemCategory() == EInv_ItemCategory::Consumable;
+}

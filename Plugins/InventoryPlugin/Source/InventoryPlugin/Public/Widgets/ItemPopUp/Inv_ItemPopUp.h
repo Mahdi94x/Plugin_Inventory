@@ -33,7 +33,7 @@ public:
 	int32 GetSplitAmount() const;
 	void CollapseSplitButton() const;
 	void CollapseConsumeButton() const;
-	void SetSliderParams(const float Max, const float CurrentValue) const;
+	void SetSliderParams(const float Max, const float DefaultValue) const;
 	FVector2D GetBoxSize() const;
 	void SetGridIndex(const int32 Index) { this->GridIndex = Index;}
 	int32 GetGridIndex() const {return this->GridIndex;}

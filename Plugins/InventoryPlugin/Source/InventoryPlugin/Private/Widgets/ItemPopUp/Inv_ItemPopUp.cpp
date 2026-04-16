@@ -69,12 +69,12 @@ void UInv_ItemPopUp::CollapseConsumeButton() const
 	Button_Consume->SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void UInv_ItemPopUp::SetSliderParams(const float Max, const float CurrentValue) const
+void UInv_ItemPopUp::SetSliderParams(const float Max, const float DefaultValue) const
 {
 	Slider_Split->SetMaxValue(Max);
 	Slider_Split->SetMinValue(1);
-	Slider_Split->SetValue(CurrentValue);
-	Text_SplitAmount->SetText(FText::AsNumber(FMath::Floor(CurrentValue)));
+	Slider_Split->SetValue(DefaultValue);
+	Text_SplitAmount->SetText(FText::AsNumber(FMath::Floor(DefaultValue)));
 }
 
 FVector2D UInv_ItemPopUp::GetBoxSize() const
