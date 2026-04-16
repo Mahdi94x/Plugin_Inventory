@@ -8,6 +8,7 @@
 #include "Types/Inv_GridTypes.h"
 #include "Inv_InventoryGrid.generated.h"
 
+class UInv_ItemPopUp;
 enum class EInv_GridSlotState : uint8;
 class UInv_HoverItem;
 class UInv_SlottedItem;
@@ -24,9 +25,7 @@ class INVENTORYPLUGIN_API UInv_InventoryGrid : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	virtual void NativeOnInitialized() override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-	
+	void SetOwningCanvas(UCanvasPanel* OwningCanvas);
 	EInv_ItemCategory GetItemCategory() const {return this->ItemCategory;}
 	FInv_SlotAvailabilityResult HasRoomForItem_Grid_IC(const UInv_ItemComponent* ItemComponent);
 	
@@ -35,6 +34,10 @@ public:
 	
 	void ShowCursor();
 	void HideCursor();
+	
+protected:
+	virtual void NativeOnInitialized() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 private:
 	
@@ -102,6 +105,7 @@ private:
 	void ConsumeHoverItemStacks(const int32 ClickedStackCount, const int32 HoveredStackCount, const int32 Index);
 	bool ShouldFillInStack(const int32 RoomInClickedSlot, const int32 HoveredStackCount) const;
 	void FillInStack(const int32 FillAmount, const int32 Remainder, const int32 Index);
+	void CreateItemPopUp(int32 GridIndex);
 
 	UFUNCTION()
 	void AddStacks(const FInv_SlotAvailabilityResult& Result);
@@ -177,4 +181,12 @@ private:
 	bool bLastMouseWithInCanvas;
 	int32 LastHighlightedIndex;
 	FIntPoint LastHighlightedDimensions;
+	
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TSubclassOf<UInv_ItemPopUp> ItemPopUpClass;
+	
+	UPROPERTY()
+	TObjectPtr<UInv_ItemPopUp> ItemPopUp;
+	
+	TWeakObjectPtr<UCanvasPanel> OwningCanvasPanel;
 };
