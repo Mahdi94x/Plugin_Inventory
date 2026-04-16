@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Inv_GridSlot.generated.h"
 
+class UInv_ItemPopUp;
 class UImage;
 class UInv_InventoryItem;
 
@@ -26,10 +27,6 @@ class INVENTORYPLUGIN_API UInv_GridSlot : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
-	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	
 	void SetTileIndex(const int32 Index) {this->TileIndex = Index; }
 	int32 GetTileIndex() const {return this->TileIndex;}
 	
@@ -50,21 +47,34 @@ public:
 	void SetStackCount(const int32 Count) {this->StackCount = Count;}
 	
 	bool GetGridSlotAvailable() const {return this->bIsGridSlotAvailable;}
-	void SetGridSlotAvailable(const bool Availability) {this->bIsGridSlotAvailable = Availability;} 
+	void SetGridSlotAvailable(const bool Availability) {this->bIsGridSlotAvailable = Availability;}
+	
+	void SetItemPopUp(UInv_ItemPopUp* PopUp);
+	UInv_ItemPopUp* GetItemPopUp() const;
 	
 	FGridSlotEvent GridSlotClicked;
 	FGridSlotEvent GridSlotHovered;
 	FGridSlotEvent GridSlotUnhovered;
+	
+protected:
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 private:
+	
+	UFUNCTION()
+	void OnItemPopUpDestruct(UUserWidget* Menu);
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Image_GridSlot;
 	
 	int32 TileIndex{INDEX_NONE};
-	int32 StackCount{0};
 	int32 UpperLeftIndex{INDEX_NONE};
-	TWeakObjectPtr<UInv_InventoryItem> InventoryItem;
+	int32 StackCount{0};
 	bool bIsGridSlotAvailable{true};
+	TWeakObjectPtr<UInv_InventoryItem> InventoryItem;
+	TWeakObjectPtr<UInv_ItemPopUp> ItemPopUp;
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	FSlateBrush Brush_Unoccupied;

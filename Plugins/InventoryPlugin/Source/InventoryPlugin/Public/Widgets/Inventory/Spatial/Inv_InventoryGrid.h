@@ -189,4 +189,7 @@ private:
 	TObjectPtr<UInv_ItemPopUp> ItemPopUp;
 	
 	TWeakObjectPtr<UCanvasPanel> OwningCanvasPanel;
+	
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	FVector2D ItemPopUpOffset;
 };
