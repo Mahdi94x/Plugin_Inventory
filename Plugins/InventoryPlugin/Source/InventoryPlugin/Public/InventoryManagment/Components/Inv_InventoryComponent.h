@@ -23,7 +23,7 @@ class INVENTORYPLUGIN_API UInv_InventoryComponent : public UActorComponent
 
 public:
 	UInv_InventoryComponent();
-	
+	virtual void BeginPlay() override;
 	void ToggleInventoryMenu();
 	
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Inventoty")
@@ -35,6 +35,11 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_AddStacksToItem(UInv_ItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
 	
+	UFUNCTION(Server, Reliable)
+	void Server_DropItem(UInv_InventoryItem* Item, int32 StackCount);
+	
+	void SpawnDroppedItem(UInv_InventoryItem* Item, int32 StackCount);
+	
 	void AddRepSubObj(UObject* SubObj);
 	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
@@ -43,9 +48,6 @@ public:
 	FInventoryItemChange OnItemRemoved;
 	FNoRoomInInventory NoRoomInInventory;
 	FStackChange OnStackChange;
-
-protected:
-	virtual void BeginPlay() override;
 
 private:
 	void ConstructInventory();
@@ -65,4 +67,18 @@ private:
 	
 	bool bInventoryMenuOpen;
 	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnAngleMin = -85.f;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnAngleMax = 85.f;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnDistanceMin = 100.f;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnDistanceMax = 250.f;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float RelativeSpawnElevation = 70.f;
 };

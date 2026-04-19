@@ -34,6 +34,7 @@ public:
 	
 	void ShowCursor();
 	void HideCursor();
+	void DropItem();
 	
 protected:
 	virtual void NativeOnInitialized() override;
@@ -106,7 +107,7 @@ private:
 	bool ShouldFillInStack(const int32 RoomInClickedSlot, const int32 HoveredStackCount) const;
 	void FillInStack(const int32 FillAmount, const int32 Remainder, const int32 Index);
 	void CreateItemPopUp(int32 GridIndex);
-	void DropItem();
+	
 
 	UFUNCTION()
 	void AddStacks(const FInv_SlotAvailabilityResult& Result);
