@@ -973,11 +973,10 @@ void UInv_InventoryGrid::DropItem()
 	if (!IsValid(HoverItem)) return;
 	if (!IsValid(HoverItem->GetInventoryItem())) return;
 	
-	// TODO: Inform the server to actually drop the item and spawn it in the world
+	InventoryComponent->Server_DropItem(HoverItem->GetInventoryItem(),HoverItem->GetStackCount());
 	
 	ClearHoverItem();
 	ShowCursor();
-	
 }
 
 void UInv_InventoryGrid::OnPopUpMenuConsume(int32 Index)

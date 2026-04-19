@@ -74,11 +74,16 @@ void UInv_InventoryComponent::SpawnDroppedItem(UInv_InventoryItem* Item, int32 S
 	
 	FVector RotatedForward = OwningPawn->GetActorForwardVector();
 	RotatedForward = RotatedForward.RotateAngleAxis(FMath::FRandRange(DropSpawnAngleMin, DropSpawnAngleMax), FVector::UpVector);
-	FVector SpawnLocation = OwningPawn->GetActorForwardVector() + RotatedForward * FMath::FRandRange(DropSpawnDistanceMin, DropSpawnDistanceMax);
+	FVector SpawnLocation = OwningPawn->GetActorLocation() + (RotatedForward * FMath::FRandRange(DropSpawnDistanceMin, DropSpawnDistanceMax));
 	SpawnLocation.Z -= RelativeSpawnElevation;
 	const FRotator SpawnRotation = FRotator::ZeroRotator;
 	
-	// TODO: Have the item manifest spawn the pick up actor in the world
+	FInv_ItemManifest& ItemManifest = Item->GetItemManifestMutable();
+	if (FInv_StackableFragment* StackableFragment = ItemManifest.GetFragmentOfTypeMutable<FInv_StackableFragment>())
+	{
+		StackableFragment->SetStackCount(StackCount);
+	}
+	ItemManifest.SpawnPickUpActor(this, SpawnLocation, SpawnRotation);
 }
 
 void UInv_InventoryComponent::AddRepSubObj(UObject* SubObj)
