@@ -285,6 +285,8 @@ void UInv_InventoryGrid::AddStacks(const FInv_SlotAvailabilityResult& Result)
 
 void UInv_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent)
 {
+	UInv_InventoryStatics::ItemUnhovered(GetOwningPlayer());
+	
 	check(GridSlotsArray.IsValidIndex(GridIndex));
 	UInv_InventoryItem* ClickedInventoryItem = GridSlotsArray[GridIndex]->GetInventoryItem().Get();
 	

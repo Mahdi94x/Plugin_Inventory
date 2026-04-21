@@ -27,4 +27,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	static FVector2D GetWidgetSize(UWidget* Widget);
+	
+	static FVector2D GetClampedWidgetPosition(const FVector2D& Boundary, const FVector2D& WidgetSize, const FVector2D& MousePos);
 };

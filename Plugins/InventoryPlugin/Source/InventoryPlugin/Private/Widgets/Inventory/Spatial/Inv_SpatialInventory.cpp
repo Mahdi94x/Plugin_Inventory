@@ -6,6 +6,10 @@
 #include "InventoryManagment/Utils/Inv_InventoryStatics.h"
 #include "Widgets/Inventory/Spatial/Inv_InventoryGrid.h"
 #include "InventoryPlugin.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
+#include "Widgets/ItemDescription/Inv_ItemDescription.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
 
 void UInv_SpatialInventory::NativeOnInitialized()
 {
@@ -49,17 +53,38 @@ FInv_SlotAvailabilityResult UInv_SpatialInventory::HasRoomForItem(UInv_ItemCompo
 		UE_LOG(LogInventory, Error, TEXT("Unhandled item category in HasRoomForItem"));
 		return FInv_SlotAvailabilityResult();
 	}
-	
 }
 
 void UInv_SpatialInventory::OnItemHovered(UInv_InventoryItem* Item)
 {
-	Super::OnItemHovered(Item);
+	UInv_ItemDescription* DescriptionWidget = GetItemDescription();
+	
+	DescriptionWidget->SetVisibility(ESlateVisibility::Collapsed);
+	GetOwningPlayer()->GetWorldTimerManager().ClearTimer(DescriptionTimer);
+	
+	FTimerDelegate DescriptionTimerDelegate;
+	DescriptionTimerDelegate.BindLambda([this]()
+	{
+		GetItemDescription()->SetVisibility(ESlateVisibility::HitTestInvisible);
+	});
+	
+	GetOwningPlayer()->GetWorldTimerManager().SetTimer(DescriptionTimer,DescriptionTimerDelegate,DescriptionTimerDelay,false);
 }
 
 void UInv_SpatialInventory::OnItemUnhovered()
 {
-	Super::OnItemUnhovered();
+	GetItemDescription()->SetVisibility(ESlateVisibility::Collapsed);
+	GetOwningPlayer()->GetWorldTimerManager().ClearTimer(DescriptionTimer);
+}
+
+UInv_ItemDescription* UInv_SpatialInventory::GetItemDescription()
+{
+	if (!IsValid(ItemDescription))
+	{
+		ItemDescription= CreateWidget<UInv_ItemDescription>(GetOwningPlayer(), ItemDescriptionClass);
+		CanvasPanel->AddChild(ItemDescription);
+	}
+	return ItemDescription;
 }
 
 bool UInv_SpatialInventory::HasHoverItem() const
@@ -69,6 +94,31 @@ bool UInv_SpatialInventory::HasHoverItem() const
 	if (Grid_Craftables->GridHasHoverItem()) return true;
 	
 	return false;
+}
+
+void UInv_SpatialInventory::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	
+	if (!IsValid(ItemDescription)) return;
+	SetItemDescriptionSizeAndPosition(ItemDescription, CanvasPanel);
+}
+
+void UInv_SpatialInventory::SetItemDescriptionSizeAndPosition(UInv_ItemDescription* Description,
+	UCanvasPanel* Canvas) const
+{
+	UCanvasPanelSlot* ItemDescriptionCPS = UWidgetLayoutLibrary::SlotAsCanvasSlot(Description);
+	if (!IsValid(ItemDescriptionCPS)) return;
+	
+	const FVector2D ItemDescriptionSize = Description->GetBoxSize();
+	ItemDescriptionCPS->SetSize(ItemDescriptionSize);
+	
+	FVector2D ClampedPosition = UInv_WidgetUtils::GetClampedWidgetPosition(
+		UInv_WidgetUtils::GetWidgetSize(Canvas), 
+		ItemDescriptionSize, 
+		UWidgetLayoutLibrary::GetMousePositionOnViewport(GetOwningPlayer()));
+	
+	ItemDescriptionCPS->SetPosition(ClampedPosition);
 }
 
 void UInv_SpatialInventory::ShowEquippables()
