@@ -47,6 +47,8 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
+	UInv_InventoryBase* GetInventoryMenu() const {return this->InventoryMenu;}
+	
 	FInventoryItemChange OnItemAdded;
 	FInventoryItemChange OnItemRemoved;
 	FNoRoomInInventory NoRoomInInventory;

@@ -35,6 +35,7 @@ public:
 	void ShowCursor();
 	void HideCursor();
 	void DropItem();
+	bool GridHasHoverItem() const;
 	
 protected:
 	virtual void NativeOnInitialized() override;

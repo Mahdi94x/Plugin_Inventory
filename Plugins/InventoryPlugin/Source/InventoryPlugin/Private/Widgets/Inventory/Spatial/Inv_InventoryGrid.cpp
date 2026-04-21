@@ -47,6 +47,11 @@ void UInv_InventoryGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	UpdateTileParameters(CanvasPosition,MousePosition);
 }
 
+bool UInv_InventoryGrid::GridHasHoverItem() const
+{
+	return IsValid(HoverItem);
+}
+
 void UInv_InventoryGrid::UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition)
 {
 	if (!bMouseWithInCanvas) return; // early exit return if the mouse is outside canvas

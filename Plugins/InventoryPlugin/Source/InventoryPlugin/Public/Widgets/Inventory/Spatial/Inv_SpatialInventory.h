@@ -18,6 +18,9 @@ class INVENTORYPLUGIN_API UInv_SpatialInventory : public UInv_InventoryBase
 	
 public:
 	virtual FInv_SlotAvailabilityResult HasRoomForItem(UInv_ItemComponent* ItemComponent) const override;
+	virtual void OnItemHovered(UInv_InventoryItem* Item) override;
+	virtual void OnItemUnhovered()override;
+	virtual bool HasHoverItem()const override;
 	
 protected:
 	virtual void NativeOnInitialized() override;

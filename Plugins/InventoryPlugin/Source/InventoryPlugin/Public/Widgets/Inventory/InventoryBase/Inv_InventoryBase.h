@@ -8,6 +8,7 @@
 #include "Inv_InventoryBase.generated.h"
 
 class UInv_ItemComponent;
+class UInv_InventoryItem;
 
 UCLASS()
 class INVENTORYPLUGIN_API UInv_InventoryBase : public UUserWidget
@@ -19,4 +20,7 @@ public:
 	{
 		return FInv_SlotAvailabilityResult();
 	}
+	virtual void OnItemHovered(UInv_InventoryItem* Item){}
+	virtual void OnItemUnhovered(){}
+	virtual bool HasHoverItem()const {return false;}
 };
