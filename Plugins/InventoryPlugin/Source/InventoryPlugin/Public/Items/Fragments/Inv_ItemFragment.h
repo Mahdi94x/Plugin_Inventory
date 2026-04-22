@@ -4,8 +4,9 @@
 #include "GameplayTagContainer.h"
 #include "Inv_ItemFragment.generated.h"
 
+class UInv_CompositeBase;
 class APlayerController;
-
+/*====================================================================================================================*/
 USTRUCT(BlueprintType)
 struct FInv_ItemFragmentBase
 {
@@ -27,8 +28,7 @@ private:
 	UPROPERTY(EditAnywhere, category = "Inventory", meta = (Categories = "FragmentTags"))
 	FGameplayTag FragmentTag = FGameplayTag::EmptyTag;
 };
-
-
+/*====================================================================================================================*/
 USTRUCT(BlueprintType)
 struct FInv_GridFragment : public FInv_ItemFragmentBase
 {
@@ -48,7 +48,7 @@ private:
 	UPROPERTY(EditAnywhere, category = "Inventory")
 	float GridPadding{0.f};
 };
-
+/*====================================================================================================================*/
 USTRUCT(BlueprintType)
 struct FInv_ImageFragment : public FInv_ItemFragmentBase
 {
@@ -64,7 +64,7 @@ private:
 	UPROPERTY(EditAnywhere, category = "Inventory")
 	FVector2D IconDimension{44.f,44.f};
 };
-
+/*====================================================================================================================*/
 USTRUCT(BlueprintType)
 struct FInv_StackableFragment : public FInv_ItemFragmentBase
 {
@@ -82,15 +82,14 @@ private:
 	UPROPERTY(EditAnywhere, category = "Inventory")
 	int32 StackCount{1};
 };
-
+/*====================================================================================================================*/
 USTRUCT(BlueprintType)
 struct FInv_ConsumableFragment : public FInv_ItemFragmentBase
 {
 	GENERATED_BODY()
 	virtual void OnConsume(APlayerController* PC) {}
 };
-
-
+/*====================================================================================================================*/
 USTRUCT(BlueprintType)
 struct FInv_HealthPotionFragment : public FInv_ConsumableFragment
 {
@@ -101,7 +100,7 @@ struct FInv_HealthPotionFragment : public FInv_ConsumableFragment
 	
 	virtual void OnConsume(APlayerController* PC) override;
 };
-
+/*====================================================================================================================*/
 USTRUCT(BlueprintType)
 struct FInv_ManaPotionFragment : public FInv_ConsumableFragment
 {
@@ -112,3 +111,19 @@ struct FInv_ManaPotionFragment : public FInv_ConsumableFragment
 	
 	virtual void OnConsume(APlayerController* PC) override;
 };
+/*====================================================================================================================*/
+/*
+ * Item fragment for assimilation into a widget
+ */
+USTRUCT(BlueprintType)
+struct FInv_InventoryItemFragment : public FInv_ItemFragmentBase
+{
+	GENERATED_BODY()
+	virtual void Assimilate(UInv_CompositeBase* Composite) const;
+	
+protected:
+	bool MatchesWidgetTag(const UInv_CompositeBase* Composite) const;
+	
+};
+
+/*====================================================================================================================*/

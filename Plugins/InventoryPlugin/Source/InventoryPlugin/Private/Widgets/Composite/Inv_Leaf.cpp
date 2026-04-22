@@ -4,5 +4,5 @@
 
 void UInv_Leaf::ApplyFunction(FUncType Function)
 {
-	Function(this);
+	Function(this); /*Apply the passed function on this leaf "execute logic"*/
 }

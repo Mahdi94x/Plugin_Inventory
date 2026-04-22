@@ -10,6 +10,7 @@
  * The Item Manifest contains the required data for creating a new Inv_InventoryItem
  */
 
+class UInv_CompositeBase;
 struct FInv_ItemFragmentBase;
 class UInv_InventoryItem;
 
@@ -32,6 +33,11 @@ struct INVENTORYPLUGIN_API FInv_ItemManifest
 	T* GetFragmentOfTypeMutable();
 	
 	void SpawnPickUpActor(const UObject* WorldContextObject, const FVector& SpawnLocation, const FRotator& SpawnRotation) const;
+	
+	template<typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
+	TArray<const T*> GetAllFragmentOfType() const;
+	
+	void AssimilateInventoryFragments(UInv_CompositeBase* Composite) const;
 
 private:
 	
@@ -86,4 +92,18 @@ T* FInv_ItemManifest::GetFragmentOfTypeMutable()
 		}
 	}
 	return nullptr;
+}
+
+template <typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
+TArray<const T*> FInv_ItemManifest::GetAllFragmentOfType() const
+{
+	TArray<const T*> Results;
+	for (const auto& Fragment : ItemFragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
+			Results.Add(FragmentPtr);
+		}
+	}
+	return Results;
 }
