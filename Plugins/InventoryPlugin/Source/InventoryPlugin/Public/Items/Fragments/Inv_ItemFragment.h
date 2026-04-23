@@ -126,3 +126,16 @@ private:
 	FVector2D IconDimension{44.f,44.f};
 };
 /*====================================================================================================================*/
+USTRUCT(BlueprintType)
+struct FInv_TextFragment : public FInv_InventoryItemFragment
+{
+	GENERATED_BODY()
+	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
+	void SetText(const FText& Text) {this->FragmentText = Text;}
+	
+private:
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	FText FragmentText;
+	
+};
+/*====================================================================================================================*/
