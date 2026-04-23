@@ -23,6 +23,6 @@ public:
 	void SetFragmentTag (const FGameplayTag& Tag) {this->FragmentTag = Tag;}
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Inventory")
+	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (Categories = "FragmentTags"))
 	FGameplayTag FragmentTag;
 };

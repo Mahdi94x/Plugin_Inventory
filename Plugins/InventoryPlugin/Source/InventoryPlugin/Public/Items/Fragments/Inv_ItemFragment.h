@@ -50,22 +50,6 @@ private:
 };
 /*====================================================================================================================*/
 USTRUCT(BlueprintType)
-struct FInv_ImageFragment : public FInv_ItemFragmentBase
-{
-	GENERATED_BODY()
-	
-	UTexture2D* GetIcon() const {return this->Icon;}
-	
-private:
-	
-	UPROPERTY(EditAnywhere, category = "Inventory")
-	TObjectPtr<UTexture2D> Icon{nullptr};
-	
-	UPROPERTY(EditAnywhere, category = "Inventory")
-	FVector2D IconDimension{44.f,44.f};
-};
-/*====================================================================================================================*/
-USTRUCT(BlueprintType)
 struct FInv_StackableFragment : public FInv_ItemFragmentBase
 {
 	GENERATED_BODY()
@@ -125,5 +109,20 @@ protected:
 	bool MatchesWidgetTag(const UInv_CompositeBase* Composite) const;
 	
 };
-
+/*====================================================================================================================*/
+USTRUCT(BlueprintType)
+struct FInv_IconFragment : public FInv_InventoryItemFragment
+{
+	GENERATED_BODY()
+	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
+	UTexture2D* GetIcon() const {return this->IconTexture;}
+	
+private:
+	
+	UPROPERTY(EditAnywhere, category = "Inventory")
+	TObjectPtr<UTexture2D> IconTexture{nullptr};
+	
+	UPROPERTY(EditAnywhere, category = "Inventory")
+	FVector2D IconDimension{44.f,44.f};
+};
 /*====================================================================================================================*/
