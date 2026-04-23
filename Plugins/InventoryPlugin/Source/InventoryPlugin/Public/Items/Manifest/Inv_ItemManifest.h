@@ -20,7 +20,7 @@ struct INVENTORYPLUGIN_API FInv_ItemManifest
 	GENERATED_BODY()
 	
 	EInv_ItemCategory GetItemCategory() const {return this->ItemCategory; }
-	UInv_InventoryItem* ManifestCreation(UObject* NewOuter) const;
+	UInv_InventoryItem* ManifestCreation(UObject* NewOuter);
 	FGameplayTag GetItemType() const {return this->ItemType;}
 	
 	template<typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
@@ -52,6 +52,8 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<AActor> PickUpActorClass;
+	
+	void ClearFragments();
 };
 
 template<typename T> requires std::derived_from<T, FInv_ItemFragmentBase>
