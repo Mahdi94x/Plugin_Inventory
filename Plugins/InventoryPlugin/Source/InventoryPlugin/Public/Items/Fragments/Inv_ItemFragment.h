@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "StructUtils/InstancedStruct.h"
 #include "Inv_ItemFragment.generated.h"
 
 class UInv_CompositeBase;
@@ -69,37 +70,9 @@ private:
 	int32 StackCount{1};
 };
 /*====================================================================================================================*/
-USTRUCT(BlueprintType)
-struct FInv_ConsumableFragment : public FInv_ItemFragmentBase
-{
-	GENERATED_BODY()
-	virtual void OnConsume(APlayerController* PC) {}
-};
-/*====================================================================================================================*/
-USTRUCT(BlueprintType)
-struct FInv_HealthPotionFragment : public FInv_ConsumableFragment
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(EditAnywhere, Category = "Inventory")
-	float HealAmount = 20.f;
-	
-	virtual void OnConsume(APlayerController* PC) override;
-};
-/*====================================================================================================================*/
-USTRUCT(BlueprintType)
-struct FInv_ManaPotionFragment : public FInv_ConsumableFragment
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(EditAnywhere, Category = "Inventory")
-	float ManaAmount = 50.f;
-	
-	virtual void OnConsume(APlayerController* PC) override;
-};
-/*====================================================================================================================*/
 /*
- * Item fragment for assimilation into a widget
+ * FInv_InventoryItemFragment can assimilate into a widget
+ * CompositeBase
  */
 USTRUCT(BlueprintType)
 struct FInv_InventoryItemFragment : public FInv_ItemFragmentBase
@@ -109,7 +82,6 @@ struct FInv_InventoryItemFragment : public FInv_ItemFragmentBase
 	
 protected:
 	bool MatchesWidgetTag(const UInv_CompositeBase* Composite) const;
-	
 };
 /*====================================================================================================================*/
 USTRUCT(BlueprintType)
@@ -146,8 +118,9 @@ struct FInv_LabeledNumberFragment : public FInv_InventoryItemFragment
 	GENERATED_BODY()
 	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
 	virtual void FragmentManifest() override;
+	float GetValue() const {return this->Value;}
 	
-	/*When manifesting for the first time only, this fragmrnt will randomize*/
+	/*When manifesting for the first time only, this fragment will randomize the value*/
 	bool bRandomizeOnManifest{true};
 	
 private:
@@ -174,5 +147,47 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	int32 MaxFractionalDigits{1};
+};
+/*====================================================================================================================*/
+/*
+ *Consume Modifier "Sub_Fragment" "Leaf"
+ */
+USTRUCT(BlueprintType)
+struct FInv_ConsumeModifier : public FInv_LabeledNumberFragment
+{
+	GENERATED_BODY()
+	virtual void OnConsume(APlayerController* PC)
+	{
+	}
+};
+/*====================================================================================================================*/
+/*
+ *FInv_ConsumableFragment "Composite, has an array of leaves"
+ */
+USTRUCT(BlueprintType)
+struct FInv_ConsumableFragment : public FInv_InventoryItemFragment
+{
+	GENERATED_BODY()
+	virtual void OnConsume(APlayerController* PC);
+	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
+	virtual void FragmentManifest() override;
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TArray<TInstancedStruct<FInv_ConsumeModifier>> ConsumeModifiers;
+};
+/*====================================================================================================================*/
+USTRUCT(BlueprintType)
+struct FInv_HealthPotionFragment : public FInv_ConsumeModifier
+{
+	GENERATED_BODY()
+	virtual void OnConsume(APlayerController* PC) override;
+};
+/*====================================================================================================================*/
+USTRUCT(BlueprintType)
+struct FInv_ManaPotionFragment : public FInv_ConsumeModifier
+{
+	GENERATED_BODY()
+	virtual void OnConsume(APlayerController* PC) override;
 };
 /*====================================================================================================================*/
