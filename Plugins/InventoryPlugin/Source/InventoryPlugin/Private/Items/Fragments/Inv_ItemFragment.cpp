@@ -4,15 +4,64 @@
 #include "Widgets/Composite/Inv_Leaf_LabeledValue.h"
 #include "Widgets/Composite/Inv_Leaf_Text.h"
 
-
+void FInv_HealthSubFragment::OnConsume_Leaf(APlayerController* PC)
+{
+	FInv_SubFragment::OnConsume_Leaf(PC);
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,
+			FString::Printf(TEXT("Health amount increased by: %.2f"),GetValue()));
+	}
+}
 /*====================================================================================================================*/
-
+void FInv_ManaSubFragment::OnConsume_Leaf(APlayerController* PC)
+{
+	FInv_SubFragment::OnConsume_Leaf(PC);
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-2,5.f,FColor::Cyan,
+			FString::Printf(TEXT("Mana amount increased by: %.2f"),GetValue()));
+	}
+}
 /*====================================================================================================================*/
-
+void FInv_ConsumptionFragment::Assimilate(UInv_CompositeBase* Composite) const
+{
+	FInv_InventoryItemFragment::Assimilate(Composite);
+	
+	for (const auto& SubFragment : SubFragmentsArray)
+	{
+		if (const auto* SubRef = SubFragment.GetPtr<FInv_SubFragment>())
+		{
+			SubRef->Assimilate(Composite);
+		}
+	}
+}
+/*====================================================================================================================*/
+void FInv_ConsumptionFragment::OnConsume_Composite(APlayerController* PC)
+{
+	for (auto& SubFragment : SubFragmentsArray)
+	{
+		if (auto* SubRef = SubFragment.GetMutablePtr<FInv_SubFragment>())
+		{
+			SubRef->OnConsume_Leaf(PC);
+		}
+	}
+}
+/*====================================================================================================================*/
+void FInv_ConsumptionFragment::FragmentManifest()
+{
+	FInv_InventoryItemFragment::FragmentManifest();
+	for (auto& SubFragment : SubFragmentsArray)
+	{
+		if (auto* SubRef = SubFragment.GetMutablePtr<FInv_SubFragment>())
+		{
+			SubRef->FragmentManifest();
+		}
+	}
+}
 /*====================================================================================================================*/
 void FInv_InventoryItemFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
-	if (!MatchesWidgetTag(Composite)) return;
 	Composite->Expand();
 }
 /*====================================================================================================================*/
@@ -24,6 +73,7 @@ bool FInv_InventoryItemFragment::MatchesWidgetTag(const UInv_CompositeBase* Comp
 void FInv_IconFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
 	FInv_InventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite)) return;
 	
 	if (const UInv_Leaf_Icon* IconLeaf = Cast<UInv_Leaf_Icon>(Composite); IsValid(IconLeaf))
 	{
@@ -36,6 +86,7 @@ void FInv_IconFragment::Assimilate(UInv_CompositeBase* Composite) const
 void FInv_TextFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
 	FInv_InventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite)) return;
 	
 	if (const UInv_Leaf_Text* TextLeaf = Cast<UInv_Leaf_Text>(Composite); IsValid(TextLeaf))
 	{
@@ -46,6 +97,7 @@ void FInv_TextFragment::Assimilate(UInv_CompositeBase* Composite) const
 void FInv_LabeledNumberFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
 	FInv_InventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite)) return;
 	
 	if (const UInv_Leaf_LabeledValue* LabeledValueLeaf = Cast<UInv_Leaf_LabeledValue>(Composite); IsValid(LabeledValueLeaf))
 	{
@@ -57,7 +109,6 @@ void FInv_LabeledNumberFragment::Assimilate(UInv_CompositeBase* Composite) const
 		LabeledValueLeaf->SetText_Value(FText::AsNumber(Value, &Options), bShouldCollapseValue);
 	}
 }
-
 void FInv_LabeledNumberFragment::FragmentManifest()
 {
 	FInv_InventoryItemFragment::FragmentManifest();

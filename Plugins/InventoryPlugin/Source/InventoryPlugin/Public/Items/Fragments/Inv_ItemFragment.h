@@ -152,12 +152,39 @@ private:
 /*
  *Consume Modifier "Sub_Fragment" "Leaf"
  */
-
+USTRUCT(BlueprintType)
+struct FInv_SubFragment : public FInv_LabeledNumberFragment
+{
+	GENERATED_BODY()
+	virtual void OnConsume_Leaf(APlayerController* PC) {}
+};
 /*====================================================================================================================*/
-
+USTRUCT(BlueprintType)
+struct FInv_HealthSubFragment : public FInv_SubFragment
+{
+	GENERATED_BODY()
+	virtual void OnConsume_Leaf(APlayerController* PC) override;
+};
 /*====================================================================================================================*/
-
+USTRUCT(BlueprintType)
+struct FInv_ManaSubFragment : public FInv_SubFragment
+{
+	GENERATED_BODY()
+	virtual void OnConsume_Leaf(APlayerController* PC) override;
+};
 /*====================================================================================================================*/
 /*
- *FInv_ConsumableFragment "Composite, has an array of leaves"
+ *FInv_ConsumptionFragment "Composite, has an array of leaves"
  */
+USTRUCT(BlueprintType)
+struct FInv_ConsumptionFragment : public FInv_InventoryItemFragment
+{
+	GENERATED_BODY()
+	virtual void OnConsume_Composite(APlayerController* PC);
+	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
+	virtual void FragmentManifest() override;
+	
+private:
+	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (ExcludeBaseStruct))
+	TArray<TInstancedStruct<FInv_SubFragment>> SubFragmentsArray;
+};

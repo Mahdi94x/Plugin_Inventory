@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -18,9 +16,9 @@ public:
 	
 	using FUncType = TFunction<void(UInv_CompositeBase*)>;
 	virtual void ApplyFunction(FUncType Function){}
-	
-	FGameplayTag GetFragmentTag() const {return this->FragmentTag;}
-	void SetFragmentTag (const FGameplayTag& Tag) {this->FragmentTag = Tag;}
+
+	FGameplayTag GetFragmentTag() const { return this->FragmentTag; }
+	void SetFragmentTag(const FGameplayTag& Tag) { this->FragmentTag = Tag; }
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (Categories = "FragmentTags"))
