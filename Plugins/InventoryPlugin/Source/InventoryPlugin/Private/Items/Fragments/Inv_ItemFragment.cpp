@@ -109,9 +109,11 @@ void FInv_LabeledNumberFragment::Assimilate(UInv_CompositeBase* Composite) const
 		LabeledValueLeaf->SetText_Value(FText::AsNumber(Value, &Options), bShouldCollapseValue);
 	}
 }
+
 void FInv_LabeledNumberFragment::FragmentManifest()
 {
 	FInv_InventoryItemFragment::FragmentManifest();
+	
 	if (bRandomizeOnManifest)
 	{
 		Value = FMath::FRandRange(MinValue, MaxValue);
