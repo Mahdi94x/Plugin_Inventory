@@ -11,6 +11,8 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Items/Inv_InventoryItem.h"
+#include "Blueprint/WidgetTree.h"
+#include "Widgets/Inventory/GridSlot/Inv_EquippedGridSlot.h"
 
 void UInv_SpatialInventory::NativeOnInitialized()
 {
@@ -25,6 +27,21 @@ void UInv_SpatialInventory::NativeOnInitialized()
 	Grid_Craftables->SetOwningCanvas(CanvasPanel);
 	
 	ShowEquippables();
+	
+	WidgetTree->ForEachWidget([this](UWidget* Widget)
+	{
+		if (UInv_EquippedGridSlot* EquippedGridSlot = Cast<UInv_EquippedGridSlot>(Widget); IsValid(EquippedGridSlot))
+		{
+			EquippedGridSlotArray.Add(EquippedGridSlot);
+			EquippedGridSlot->EquippedGridSlotClicked.AddDynamic(this, &ThisClass::EquippedGridSlotClicked);
+		}
+	});
+}
+
+void UInv_SpatialInventory::EquippedGridSlotClicked(UInv_EquippedGridSlot* EquippedGridSlot,
+	const FGameplayTag& EquipmentTypeTag)
+{
+	
 }
 
 FReply UInv_SpatialInventory::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -97,6 +114,12 @@ bool UInv_SpatialInventory::HasHoverItem() const
 	if (Grid_Craftables->GridHasHoverItem()) return true;
 	
 	return false;
+}
+
+UInv_HoverItem* UInv_SpatialInventory::GetHoverItem() const
+{
+	if (!ActiveGrid.IsValid()) return nullptr;
+	return ActiveGrid->GetHoverItem();
 }
 
 void UInv_SpatialInventory::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

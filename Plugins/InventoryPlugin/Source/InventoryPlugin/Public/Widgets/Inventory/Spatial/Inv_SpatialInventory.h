@@ -6,11 +6,14 @@
 #include "Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
 #include "Inv_SpatialInventory.generated.h"
 
+struct FGameplayTag;
+class UInv_EquippedGridSlot;
 class UInv_ItemDescription;
 class UCanvasPanel;
 class UButton;
 class UWidgetSwitcher;
 class UInv_InventoryGrid;
+class UInv_HoverItem;
 
 UCLASS()
 class INVENTORYPLUGIN_API UInv_SpatialInventory : public UInv_InventoryBase
@@ -22,11 +25,12 @@ public:
 	virtual void OnItemHovered(UInv_InventoryItem* Item) override;
 	virtual void OnItemUnhovered() override;
 	virtual bool HasHoverItem()const override;
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual UInv_HoverItem* GetHoverItem() const override;
 	
 protected:
 	virtual void NativeOnInitialized() override;
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 private:
 	UFUNCTION()
@@ -37,6 +41,9 @@ private:
 	
 	UFUNCTION()
 	void ShowCraftables();
+	
+	UFUNCTION() /*Callback function for the delegate FEquippedGridSlotClicked in UInv_EquippedGridSlot*/
+	void EquippedGridSlotClicked(UInv_EquippedGridSlot* EquippedGridSlot, const FGameplayTag& EquipmentTypeTag);
 	
 	void SetActiveGrid(UInv_InventoryGrid* Grid, UButton* Button);
 	
@@ -82,5 +89,8 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	float DescriptionTimerDelay = 0.5f;
+	
+	UPROPERTY()
+	TArray<TObjectPtr<UInv_EquippedGridSlot>> EquippedGridSlotArray;
 	
 };

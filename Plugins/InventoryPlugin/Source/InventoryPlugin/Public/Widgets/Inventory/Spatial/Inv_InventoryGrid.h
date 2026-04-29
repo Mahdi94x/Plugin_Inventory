@@ -28,6 +28,7 @@ public:
 	void SetOwningCanvas(UCanvasPanel* OwningCanvas);
 	EInv_ItemCategory GetItemCategory() const {return this->ItemCategory;}
 	FInv_SlotAvailabilityResult HasRoomForItem_Grid_IC(const UInv_ItemComponent* ItemComponent);
+	UInv_HoverItem* GetHoverItem() const;
 	
 	UFUNCTION()
 	void AddItem(UInv_InventoryItem* InventoryItem);
