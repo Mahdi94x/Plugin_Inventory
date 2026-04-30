@@ -68,7 +68,8 @@ void FInv_LabeledNumberFragment::FragmentManifest()
 }
 /*====================================================================================================================*/
 
-/*Consumption*/
+/*Consumption Fragment*/
+/*====================================================================================================================*/
 void FInv_HealthConsumeModifier::OnConsume_Leaf(APlayerController* PC)
 {
 	FInv_ConsumeModifier::OnConsume_Leaf(PC);
@@ -127,7 +128,7 @@ void FInv_ConsumptionFragment::FragmentManifest()
 /*====================================================================================================================*/
 
 
-/*Equipment*/
+/*Equipment Fragment*/
 /*====================================================================================================================*/
 void FInv_StrengthEquipModifier::OnEquip_Leaf(APlayerController* PC)
 {

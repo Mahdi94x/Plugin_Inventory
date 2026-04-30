@@ -46,12 +46,11 @@ private:
 	void EquippedGridSlotClicked(UInv_EquippedGridSlot* EquippedGridSlot, const FGameplayTag& EquipmentTypeTag);
 	
 	void SetActiveGrid(UInv_InventoryGrid* Grid, UButton* Button);
-	
 	void DisableButton(UButton* Button);
-	
 	UInv_ItemDescription* GetItemDescription();
-	
 	void SetItemDescriptionSizeAndPosition(UInv_ItemDescription* Description, UCanvasPanel* Canvas) const;
+	bool CanEquipHoverItem(UInv_EquippedGridSlot* EquippedGridSlot, const FGameplayTag& EquipmentTypeTag) const;
+	
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> Switcher;

@@ -10,6 +10,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquippedGridSlotClicked, UInv_EquippedGridSlot*, GridSlot, const FGameplayTag&, EquipmentTypeTag);
 
 class UImage;
+class UInv_EquippedSlottedItem;
 
 UCLASS()
 class INVENTORYPLUGIN_API UInv_EquippedGridSlot : public UInv_GridSlot
@@ -20,6 +21,7 @@ public:
 	FEquippedGridSlotClicked EquippedGridSlotClicked;
 	void SetEquipmentTypeTag(const FGameplayTag& Tag) {this->EquipmentTypeTag = Tag;}
 	FGameplayTag GetEquipmentTypeTag() const {return this->EquipmentTypeTag;}
+	UInv_EquippedSlottedItem* OnItemEqiupped(UInv_InventoryItem* Item, const FGameplayTag& EquipmentTag, float TileSize);
 	
 protected:
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

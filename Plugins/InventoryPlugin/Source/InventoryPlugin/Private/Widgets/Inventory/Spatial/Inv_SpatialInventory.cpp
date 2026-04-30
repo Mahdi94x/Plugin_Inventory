@@ -13,6 +13,7 @@
 #include "Items/Inv_InventoryItem.h"
 #include "Blueprint/WidgetTree.h"
 #include "Widgets/Inventory/GridSlot/Inv_EquippedGridSlot.h"
+#include "Widgets/Inventory/HoverItem/Inv_HoverItem.h"
 
 void UInv_SpatialInventory::NativeOnInitialized()
 {
@@ -41,7 +42,31 @@ void UInv_SpatialInventory::NativeOnInitialized()
 void UInv_SpatialInventory::EquippedGridSlotClicked(UInv_EquippedGridSlot* EquippedGridSlot,
 	const FGameplayTag& EquipmentTypeTag)
 {
+	// Check to see if we can equip the hover item
+	if (!CanEquipHoverItem(EquippedGridSlot, EquipmentTypeTag)) return;
 	
+	// create an equipped slotted item and add it to the equipped grid slot (EquippedGridSlot->OnItemEqiupped (3 params))
+	
+	// clear the hover item
+	
+	// inform the server that an item has been equipped (also unequipping an existing item "Swapping")
+}
+
+bool UInv_SpatialInventory::CanEquipHoverItem(UInv_EquippedGridSlot* EquippedGridSlot,
+	const FGameplayTag& EquipmentTypeTag) const
+{
+	if (!IsValid(EquippedGridSlot) || EquippedGridSlot->GetInventoryItem().IsValid()) return false;
+	
+	UInv_HoverItem* HoverItem = GetHoverItem();
+	if (!IsValid(HoverItem)) return false;
+	
+	UInv_InventoryItem* HeldItem = HoverItem->GetInventoryItem();
+	
+	return HasHoverItem() &&
+		IsValid(HeldItem) &&
+			!HoverItem->IsStackable() &&
+				HeldItem->GetItemManifest().GetItemCategory() == EInv_ItemCategory::Equippable &&
+					HeldItem->GetItemManifest().GetItemType().MatchesTag(EquipmentTypeTag);
 }
 
 FReply UInv_SpatialInventory::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
