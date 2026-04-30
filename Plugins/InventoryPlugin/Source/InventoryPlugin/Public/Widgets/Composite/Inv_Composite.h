@@ -17,6 +17,7 @@ class INVENTORYPLUGIN_API UInv_Composite : public UInv_CompositeBase
 public:
 	virtual void ApplyFunction(FUncType Function) override;
 	virtual void Collapse() override;
+	TArray<UInv_CompositeBase*> GetChildren() { return Children; }
 	
 protected:
 	virtual void NativeOnInitialized() override;
