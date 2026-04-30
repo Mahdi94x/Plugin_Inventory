@@ -153,21 +153,21 @@ private:
  *Consume Modifier "Sub_Fragment" "Leaf"
  */
 USTRUCT(BlueprintType)
-struct FInv_SubFragment : public FInv_LabeledNumberFragment
+struct FInv_ConsumeModifier : public FInv_LabeledNumberFragment
 {
 	GENERATED_BODY()
 	virtual void OnConsume_Leaf(APlayerController* PC) {}
 };
 /*====================================================================================================================*/
 USTRUCT(BlueprintType)
-struct FInv_HealthSubFragment : public FInv_SubFragment
+struct FInv_HealthConsumeModifier : public FInv_ConsumeModifier
 {
 	GENERATED_BODY()
 	virtual void OnConsume_Leaf(APlayerController* PC) override;
 };
 /*====================================================================================================================*/
 USTRUCT(BlueprintType)
-struct FInv_ManaSubFragment : public FInv_SubFragment
+struct FInv_ManaConsumeModifier : public FInv_ConsumeModifier
 {
 	GENERATED_BODY()
 	virtual void OnConsume_Leaf(APlayerController* PC) override;
@@ -186,5 +186,43 @@ struct FInv_ConsumptionFragment : public FInv_InventoryItemFragment
 	
 private:
 	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (ExcludeBaseStruct))
-	TArray<TInstancedStruct<FInv_SubFragment>> SubFragmentsArray;
+	TArray<TInstancedStruct<FInv_ConsumeModifier>> ConsumeModifiersArray;
 };
+/*====================================================================================================================*/
+/*
+ *Equip Modifier "Sub_Fragment" "Leaf"
+ */
+USTRUCT(BlueprintType)
+struct FInv_EquipModifier : public FInv_LabeledNumberFragment
+{
+	GENERATED_BODY()
+	virtual void OnEquip_Leaf(APlayerController* PC){}
+	virtual void OnUnequip_Leaf(APlayerController* PC){}
+};
+/*====================================================================================================================*/
+USTRUCT(BlueprintType)
+struct FInv_StrengthEquipModifier : public FInv_EquipModifier
+{
+	GENERATED_BODY()
+	virtual void OnEquip_Leaf(APlayerController* PC) override;
+	virtual void OnUnequip_Leaf(APlayerController* PC) override;
+};
+/*====================================================================================================================*/
+/*
+ *FInv_EquipmentFragment "Composite, has an array of leaves"
+ */
+USTRUCT(BlueprintType)
+struct FInv_EquipmentFragment : public FInv_InventoryItemFragment
+{
+	GENERATED_BODY()
+	bool bEquipped{false};
+	void OnEquip_Composite(APlayerController* PC);
+	void OnUnequip_Composite(APlayerController* PC);
+	virtual void Assimilate(UInv_CompositeBase* Composite) const override;
+	virtual void FragmentManifest() override;
+	
+private:
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TArray<TInstancedStruct<FInv_EquipModifier>> EquipModifiersArray;
+};
+/*====================================================================================================================*/

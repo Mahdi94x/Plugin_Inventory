@@ -4,61 +4,7 @@
 #include "Widgets/Composite/Inv_Leaf_LabeledValue.h"
 #include "Widgets/Composite/Inv_Leaf_Text.h"
 
-void FInv_HealthSubFragment::OnConsume_Leaf(APlayerController* PC)
-{
-	FInv_SubFragment::OnConsume_Leaf(PC);
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,
-			FString::Printf(TEXT("Health amount increased by: %.2f"),GetValue()));
-	}
-}
-/*====================================================================================================================*/
-void FInv_ManaSubFragment::OnConsume_Leaf(APlayerController* PC)
-{
-	FInv_SubFragment::OnConsume_Leaf(PC);
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-2,5.f,FColor::Cyan,
-			FString::Printf(TEXT("Mana amount increased by: %.2f"),GetValue()));
-	}
-}
-/*====================================================================================================================*/
-void FInv_ConsumptionFragment::Assimilate(UInv_CompositeBase* Composite) const
-{
-	FInv_InventoryItemFragment::Assimilate(Composite);
-	
-	for (const auto& SubFragment : SubFragmentsArray)
-	{
-		if (const auto* SubRef = SubFragment.GetPtr<FInv_SubFragment>())
-		{
-			SubRef->Assimilate(Composite);
-		}
-	}
-}
-/*====================================================================================================================*/
-void FInv_ConsumptionFragment::OnConsume_Composite(APlayerController* PC)
-{
-	for (auto& SubFragment : SubFragmentsArray)
-	{
-		if (auto* SubRef = SubFragment.GetMutablePtr<FInv_SubFragment>())
-		{
-			SubRef->OnConsume_Leaf(PC);
-		}
-	}
-}
-/*====================================================================================================================*/
-void FInv_ConsumptionFragment::FragmentManifest()
-{
-	FInv_InventoryItemFragment::FragmentManifest();
-	for (auto& SubFragment : SubFragmentsArray)
-	{
-		if (auto* SubRef = SubFragment.GetMutablePtr<FInv_SubFragment>())
-		{
-			SubRef->FragmentManifest();
-		}
-	}
-}
+/*General Fragments*/
 /*====================================================================================================================*/
 void FInv_InventoryItemFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
@@ -109,7 +55,7 @@ void FInv_LabeledNumberFragment::Assimilate(UInv_CompositeBase* Composite) const
 		LabeledValueLeaf->SetText_Value(FText::AsNumber(Value, &Options), bShouldCollapseValue);
 	}
 }
-
+/*====================================================================================================================*/
 void FInv_LabeledNumberFragment::FragmentManifest()
 {
 	FInv_InventoryItemFragment::FragmentManifest();
@@ -122,3 +68,137 @@ void FInv_LabeledNumberFragment::FragmentManifest()
 }
 /*====================================================================================================================*/
 
+/*Consumption*/
+void FInv_HealthConsumeModifier::OnConsume_Leaf(APlayerController* PC)
+{
+	FInv_ConsumeModifier::OnConsume_Leaf(PC);
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,
+			FString::Printf(TEXT("Health amount increased by: %.2f"),GetValue()));
+	}
+}
+/*====================================================================================================================*/
+void FInv_ManaConsumeModifier::OnConsume_Leaf(APlayerController* PC)
+{
+	FInv_ConsumeModifier::OnConsume_Leaf(PC);
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-2,5.f,FColor::Cyan,
+			FString::Printf(TEXT("Mana amount increased by: %.2f"),GetValue()));
+	}
+}
+/*====================================================================================================================*/
+void FInv_ConsumptionFragment::Assimilate(UInv_CompositeBase* Composite) const
+{
+	FInv_InventoryItemFragment::Assimilate(Composite);
+	
+	for (const auto& SubFragment : ConsumeModifiersArray)
+	{
+		if (const auto* SubRef = SubFragment.GetPtr<FInv_ConsumeModifier>())
+		{
+			SubRef->Assimilate(Composite);
+		}
+	}
+}
+/*====================================================================================================================*/
+void FInv_ConsumptionFragment::OnConsume_Composite(APlayerController* PC)
+{
+	for (auto& SubFragment : ConsumeModifiersArray)
+	{
+		if (auto* SubRef = SubFragment.GetMutablePtr<FInv_ConsumeModifier>())
+		{
+			SubRef->OnConsume_Leaf(PC);
+		}
+	}
+}
+/*====================================================================================================================*/
+void FInv_ConsumptionFragment::FragmentManifest()
+{
+	FInv_InventoryItemFragment::FragmentManifest();
+	for (auto& SubFragment : ConsumeModifiersArray)
+	{
+		if (auto* SubRef = SubFragment.GetMutablePtr<FInv_ConsumeModifier>())
+		{
+			SubRef->FragmentManifest();
+		}
+	}
+}
+/*====================================================================================================================*/
+
+
+/*Equipment*/
+/*====================================================================================================================*/
+void FInv_StrengthEquipModifier::OnEquip_Leaf(APlayerController* PC)
+{
+	FInv_EquipModifier::OnEquip_Leaf(PC);
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Green,
+			FString::Printf(TEXT("Strength increased by: %.2f"),GetValue()));
+	}
+}
+/*====================================================================================================================*/
+
+void FInv_StrengthEquipModifier::OnUnequip_Leaf(APlayerController* PC)
+{
+	FInv_EquipModifier::OnUnequip_Leaf(PC);
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,
+			FString::Printf(TEXT("Strength decreased by: %.2f"),GetValue()));
+	}
+}
+/*====================================================================================================================*/
+
+void FInv_EquipmentFragment::OnEquip_Composite(APlayerController* PC)
+{
+	if (bEquipped) return;
+	bEquipped = true;
+	for (auto& SubFragment : EquipModifiersArray)
+	{
+		if (auto* SubRef = SubFragment.GetMutablePtr<FInv_EquipModifier>())
+		{
+			SubRef->OnEquip_Leaf(PC);
+		}
+	}
+}
+/*====================================================================================================================*/
+
+void FInv_EquipmentFragment::OnUnequip_Composite(APlayerController* PC)
+{
+	if (!bEquipped) return;
+	bEquipped = false;
+	for (auto& SubFragment : EquipModifiersArray)
+	{
+		if (auto* SubRef = SubFragment.GetMutablePtr<FInv_EquipModifier>())
+		{
+			SubRef->OnUnequip_Leaf(PC);
+		}
+	}
+}
+/*====================================================================================================================*/
+void FInv_EquipmentFragment::Assimilate(UInv_CompositeBase* Composite) const
+{
+	FInv_InventoryItemFragment::Assimilate(Composite);
+	for (const auto& SubFragment : EquipModifiersArray)
+	{
+		if (const auto* SubRef = SubFragment.GetPtr<FInv_EquipModifier>())
+		{
+			SubRef->Assimilate(Composite);
+		}
+	}
+}
+/*====================================================================================================================*/
+void FInv_EquipmentFragment::FragmentManifest()
+{
+	FInv_InventoryItemFragment::FragmentManifest();
+	for (auto& SubFragment : EquipModifiersArray)
+	{
+		if (auto* SubRef = SubFragment.GetMutablePtr<FInv_EquipModifier>())
+		{
+			SubRef->FragmentManifest();
+		}
+	}
+}
+/*====================================================================================================================*/
