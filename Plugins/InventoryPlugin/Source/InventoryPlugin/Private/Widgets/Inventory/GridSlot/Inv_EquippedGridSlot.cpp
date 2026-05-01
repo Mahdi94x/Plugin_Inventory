@@ -1,9 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Widgets/Inventory/GridSlot/Inv_EquippedGridSlot.h"
+
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "InventoryManagment/Utils/Inv_InventoryStatics.h"
 #include "Widgets/Inventory/HoverItem/Inv_HoverItem.h"
 #include "Components/Image.h"
+#include "Components/Overlay.h"
+#include "Components/OverlaySlot.h"
 #include "Items/Inv_InventoryItem.h"
 #include "Items/Fragments/Inv_FragmentTags.h"
 #include "Items/Fragments/Inv_ItemFragment.h"
@@ -36,11 +40,26 @@ UInv_EquippedSlottedItem* UInv_EquippedGridSlot::OnItemEquipped(UInv_InventoryIt
 	this->SetInventoryItem(Item);
 	
 	// set the image brush on the equipped slotted item
+	const FInv_IconFragment* IconFragment = GetFragment<FInv_IconFragment>(Item, FragmentTags::IconFragment);
+	if (!IconFragment) return nullptr;
+	FSlateBrush Brush;
+	Brush.SetResourceObject(IconFragment->GetIcon());
+	Brush.DrawAs = ESlateBrushDrawType::Image;
+	Brush.ImageSize = DrawSize;
+	EquippedSlottedItem->SetImageBrush(Brush);
 	
 	// add the equipped slotted item as a child to this widget (equipped grid slot) overlay
+	Overlay->AddChildToOverlay(EquippedSlottedItem);
+	FGeometry OverlayGeometry = Overlay->GetCachedGeometry();
+	auto OverlayPos = OverlayGeometry.Position;
+	auto OverlaySize = OverlayGeometry.Size;
+	const float LeftPadding = OverlaySize.X /2.f - DrawSize.X / 2.f;
+	const float RightPadding =  OverlaySize.Y /2.f - DrawSize.Y / 2.f;
+	UOverlaySlot* OverlaySlot = UWidgetLayoutLibrary::SlotAsOverlaySlot(EquippedSlottedItem);
+	OverlaySlot->SetPadding(FMargin(LeftPadding,RightPadding));
 	
 	// return the UInv_EquippedSlottedItem created
-	return nullptr;
+	return EquippedSlottedItem;
 }
 
 void UInv_EquippedGridSlot::NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)

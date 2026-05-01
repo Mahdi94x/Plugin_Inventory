@@ -7,7 +7,9 @@
 #include "GameplayTagContainer.h"
 #include "Inv_EquippedGridSlot.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquippedGridSlotClicked, UInv_EquippedGridSlot*, GridSlot, const FGameplayTag&, EquipmentTypeTag);
+class UOverlay;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquippedGridSlotClicked, UInv_EquippedGridSlot*, GridSlot,
+                                             const FGameplayTag&, EquipmentTypeTag);
 
 class UImage;
 class UInv_EquippedSlottedItem;
@@ -40,5 +42,8 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UInv_EquippedSlottedItem> EquippedSlottedItemClass;
+	
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UOverlay> Overlay;
 	
 };
