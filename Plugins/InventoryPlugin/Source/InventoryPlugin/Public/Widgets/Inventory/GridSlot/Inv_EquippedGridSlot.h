@@ -21,7 +21,7 @@ public:
 	FEquippedGridSlotClicked EquippedGridSlotClicked;
 	void SetEquipmentTypeTag(const FGameplayTag& Tag) {this->EquipmentTypeTag = Tag;}
 	FGameplayTag GetEquipmentTypeTag() const {return this->EquipmentTypeTag;}
-	UInv_EquippedSlottedItem* OnItemEqiupped(UInv_InventoryItem* Item, const FGameplayTag& EquipmentTag, float TileSize);
+	UInv_EquippedSlottedItem* OnItemEquipped(UInv_InventoryItem* Item, const FGameplayTag& EquipmentTag, float TileSize);
 	
 protected:
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
@@ -34,4 +34,11 @@ private:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Image_GrayedOutImage;
+	
+	UPROPERTY()
+	TObjectPtr<UInv_EquippedSlottedItem> EquippedSlottedItem;
+	
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TSubclassOf<UInv_EquippedSlottedItem> EquippedSlottedItemClass;
+	
 };
