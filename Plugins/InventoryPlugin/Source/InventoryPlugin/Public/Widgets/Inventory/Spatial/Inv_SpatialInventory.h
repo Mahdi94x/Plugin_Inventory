@@ -6,6 +6,7 @@
 #include "Widgets/Inventory/InventoryBase/Inv_InventoryBase.h"
 #include "Inv_SpatialInventory.generated.h"
 
+class UInv_EquippedSlottedItem;
 struct FGameplayTag;
 class UInv_EquippedGridSlot;
 class UInv_ItemDescription;
@@ -26,6 +27,7 @@ public:
 	virtual void OnItemUnhovered() override;
 	virtual bool HasHoverItem()const override;
 	virtual UInv_HoverItem* GetHoverItem() const override;
+	virtual float GetTileSize() const override;
 	
 protected:
 	virtual void NativeOnInitialized() override;
@@ -44,6 +46,9 @@ private:
 	
 	UFUNCTION() /*Callback function for the delegate FEquippedGridSlotClicked in UInv_EquippedGridSlot*/
 	void EquippedGridSlotClicked(UInv_EquippedGridSlot* EquippedGridSlot, const FGameplayTag& EquipmentTypeTag);
+	
+	UFUNCTION() /*Callback function for the delegate FEquippedGridSlotClicked in UInv_EquippedSlottedItem*/
+	void EquippedSlottedItemClicked(UInv_EquippedSlottedItem* EquippedSlottedItem);
 	
 	void SetActiveGrid(UInv_InventoryGrid* Grid, UButton* Button);
 	void DisableButton(UButton* Button);

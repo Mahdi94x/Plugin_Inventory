@@ -8,6 +8,7 @@
 #include "Widgets/Utils/Inv_WidgetUtils.h"
 #include "Inv_InventoryStatics.generated.h"
 
+class UInv_InventoryBase;
 class UInv_WidgetUtils;
 class UInv_ItemComponent;
 class UInv_InventoryComponent;
@@ -36,6 +37,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	static UInv_HoverItem* GetHoverItem(APlayerController* PC);
+	
+	static UInv_InventoryBase* GetInventoryWidget(APlayerController* PC);
 };
 
 template <typename T, typename FuncT>

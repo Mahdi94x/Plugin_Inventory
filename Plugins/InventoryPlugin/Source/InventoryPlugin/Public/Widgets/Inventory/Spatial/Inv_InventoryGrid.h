@@ -29,6 +29,8 @@ public:
 	EInv_ItemCategory GetItemCategory() const {return this->ItemCategory;}
 	FInv_SlotAvailabilityResult HasRoomForItem_Grid_IC(const UInv_ItemComponent* ItemComponent);
 	UInv_HoverItem* GetHoverItem() const;
+	float GetTileSize() const {return this->TileSize;}
+	void ClearHoverItem();
 	
 	UFUNCTION()
 	void AddItem(UInv_InventoryItem* InventoryItem);
@@ -97,7 +99,6 @@ private:
 	void UnhighlightSlots(const int32 Index, const FIntPoint& Dimensions);
 	void ChangeHoverType(const int32 Index, const FIntPoint& Dimensions, EInv_GridSlotState GridSlotState);
 	void PutDownOnIndex(const int32 Index);
-	void ClearHoverItem();
 	UUserWidget* GetVisibleCursorWidget();
 	UUserWidget* GetHiddenCursorWidget();
 	bool IsSameStackable(const UInv_InventoryItem* ClickedInventoryItem) const;

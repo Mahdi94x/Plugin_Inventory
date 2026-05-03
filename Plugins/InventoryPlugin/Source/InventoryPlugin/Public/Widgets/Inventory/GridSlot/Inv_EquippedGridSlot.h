@@ -44,6 +44,6 @@ private:
 	TSubclassOf<UInv_EquippedSlottedItem> EquippedSlottedItemClass;
 	
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UOverlay> Overlay;
+	TObjectPtr<UOverlay> Overlay_Root;
 	
 };

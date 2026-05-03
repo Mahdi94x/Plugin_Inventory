@@ -14,6 +14,8 @@
 #include "Blueprint/WidgetTree.h"
 #include "Widgets/Inventory/GridSlot/Inv_EquippedGridSlot.h"
 #include "Widgets/Inventory/HoverItem/Inv_HoverItem.h"
+#include "Widgets/Inventory/SlottedItems/Inv_EquippedSlottedItem.h"
+#include "InventoryManagment/Components/Inv_InventoryComponent.h"
 
 void UInv_SpatialInventory::NativeOnInitialized()
 {
@@ -45,15 +47,38 @@ void UInv_SpatialInventory::EquippedGridSlotClicked(UInv_EquippedGridSlot* Equip
 	// Check to see if we can equip the hover item
 	if (!CanEquipHoverItem(EquippedGridSlot, EquipmentTypeTag)) return;
 	
-	// create an equipped slotted item and add it to the equipped grid slot (EquippedGridSlot->OnItemEquipped (3 params))
+	// create an equipped slotted item and add it to the equipped grid slot
+	const float TileSize = UInv_InventoryStatics::GetInventoryWidget(GetOwningPlayer())->GetTileSize();
+	UInv_EquippedSlottedItem* EquippedSlottedItem = EquippedGridSlot->OnItemEquipped
+	(GetHoverItem()->GetInventoryItem(),
+		EquipmentTypeTag,
+		TileSize);
 	
-	// clear the hover item
+	EquippedSlottedItem->OnEquippedSlottedItemClicked.AddDynamic(this, &ThisClass::EquippedSlottedItemClicked);
 	
 	// inform the server that an item has been equipped (also unequipping an existing item "Swapping")
+	UInv_InventoryComponent* InventoryComponent = UInv_InventoryStatics::GetInventoryComponent(GetOwningPlayer());
+	check(IsValid(InventoryComponent));
+	
+	InventoryComponent->Server_EquipSlotClicked(GetHoverItem()->GetInventoryItem(), nullptr);
+	
+	if (GetOwningPlayer()->GetNetMode() != NM_DedicatedServer)
+	{
+		InventoryComponent->OnItemEquipped.Broadcast(GetHoverItem()->GetInventoryItem());
+	}
+	
+	// clear the hover item
+	Grid_Equippables->ClearHoverItem();
+	
+}
+
+void UInv_SpatialInventory::EquippedSlottedItemClicked(UInv_EquippedSlottedItem* EquippedSlottedItem)
+{
+	
 }
 
 bool UInv_SpatialInventory::CanEquipHoverItem(UInv_EquippedGridSlot* EquippedGridSlot,
-	const FGameplayTag& EquipmentTypeTag) const
+                                              const FGameplayTag& EquipmentTypeTag) const
 {
 	if (!IsValid(EquippedGridSlot) || EquippedGridSlot->GetInventoryItem().IsValid()) return false;
 	
@@ -145,6 +170,12 @@ UInv_HoverItem* UInv_SpatialInventory::GetHoverItem() const
 {
 	if (!ActiveGrid.IsValid()) return nullptr;
 	return ActiveGrid->GetHoverItem();
+}
+
+float UInv_SpatialInventory::GetTileSize() const
+{
+	return Grid_Equippables->GetTileSize();
+	
 }
 
 void UInv_SpatialInventory::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
