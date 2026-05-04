@@ -339,8 +339,12 @@ void UInv_InventoryGrid::OnSlottedItemClicked(int32 GridIndex, const FPointerEve
 		}
 	}
 	
-	// swap with the hover item? (Swapping Case)
-	SwapWithHoverItem(ClickedInventoryItem, GridIndex);
+	/*Checking if we can swap with a valid item*/
+	if (CurrentQueryResult.ValidInventoryItem.IsValid())
+	{
+		// swap with the hover item? (Swapping Case)
+		SwapWithHoverItem(ClickedInventoryItem, GridIndex);
+	}
 }
 
 void UInv_InventoryGrid::CreateItemPopUp(int32 GridIndex)
