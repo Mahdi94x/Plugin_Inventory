@@ -24,6 +24,7 @@ public:
 	void SetEquipmentTypeTag(const FGameplayTag& Tag) {this->EquipmentTypeTag = Tag;}
 	FGameplayTag GetEquipmentTypeTag() const {return this->EquipmentTypeTag;}
 	UInv_EquippedSlottedItem* OnItemEquipped(UInv_InventoryItem* Item, const FGameplayTag& EquipmentTag, float TileSize);
+	void SetEquippedSlottedItem(UInv_EquippedSlottedItem* Item) {this->EquippedSlottedItem = Item;}
 	
 protected:
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

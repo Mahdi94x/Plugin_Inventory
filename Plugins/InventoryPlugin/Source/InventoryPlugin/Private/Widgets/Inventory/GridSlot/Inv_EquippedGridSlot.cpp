@@ -51,7 +51,6 @@ UInv_EquippedSlottedItem* UInv_EquippedGridSlot::OnItemEquipped(UInv_InventoryIt
 	// add the equipped slotted item as a child to this widget (equipped grid slot) overlay
 	Overlay_Root->AddChildToOverlay(EquippedSlottedItem);
 	FGeometry OverlayGeometry = Overlay_Root->GetCachedGeometry();
-	auto OverlayPos = OverlayGeometry.Position;
 	auto OverlaySize = OverlayGeometry.Size;
 	const float LeftPadding = OverlaySize.X /2.f - DrawSize.X / 2.f;
 	const float RightPadding =  OverlaySize.Y /2.f - DrawSize.Y / 2.f;
