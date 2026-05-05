@@ -47,6 +47,18 @@ void UInv_InventoryGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 	UpdateTileParameters(CanvasPosition,MousePosition);
 }
 
+void UInv_InventoryGrid::PutHoverItemBack()
+{
+	if (!IsValid(HoverItem)) return;
+	
+	/*Put the hover item back in the first available place, using the stack count the hover item*/
+	FInv_SlotAvailabilityResult Result = HasRoomForItem_Grid_II(HoverItem->GetInventoryItem(), HoverItem->GetStackCount());
+	Result.Item = HoverItem->GetInventoryItem();
+	
+	AddStacks(Result);
+	ClearHoverItem();
+}
+
 bool UInv_InventoryGrid::GridHasHoverItem() const
 {
 	return IsValid(HoverItem);
@@ -503,8 +515,13 @@ void UInv_InventoryGrid::AssignHoverItem(UInv_InventoryItem* InventoryItem)
 	if (GetOwningPlayer()) GetOwningPlayer()->SetMouseCursorWidget(EMouseCursor::Default,HoverItem);
 }
 
+void UInv_InventoryGrid::OnHide()
+{
+	PutHoverItemBack();
+}
+
 void UInv_InventoryGrid::AssignHoverItem(UInv_InventoryItem* InventoryItem, const int32 GridIndex,
-	const int32 PreviousGridIndex)
+                                         const int32 PreviousGridIndex)
 {
 	AssignHoverItem(InventoryItem);
 	HoverItem->SetPreviousGridIndex(PreviousGridIndex);
@@ -548,12 +565,12 @@ UInv_HoverItem* UInv_InventoryGrid::GetHoverItem() const
 	return this->HoverItem;
 }
 
-FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_II(const UInv_InventoryItem* InventoryItem)
+FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_II(const UInv_InventoryItem* InventoryItem, const int32 StackAmountOverride)
 {
-	return HasRoomForItem_Grid_IM(InventoryItem->GetItemManifest());
+	return HasRoomForItem_Grid_IM(InventoryItem->GetItemManifest(), StackAmountOverride);
 }
 
-FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_IM(const FInv_ItemManifest& ItemManifest)
+FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_IM(const FInv_ItemManifest& ItemManifest , const int32 StackAmountOverride)
 {
 	FInv_SlotAvailabilityResult Result;
 	
@@ -564,6 +581,11 @@ FInv_SlotAvailabilityResult UInv_InventoryGrid::HasRoomForItem_Grid_IM(const FIn
 	// Determine how many stacks to add 
 	const int32 MaxStackSize = StackableFragment? StackableFragment->GetMaxStackSize() : 1;
 	int32 AmountToFill = StackableFragment? StackableFragment->GetStackCount() : 1;
+	
+	if (StackAmountOverride != -1 && Result.bStackable)
+	{
+		AmountToFill = StackAmountOverride;
+	}
 	
 	TSet<int32> CheckedIndices;
 	

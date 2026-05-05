@@ -32,6 +32,7 @@ public:
 	float GetTileSize() const {return this->TileSize;}
 	void ClearHoverItem();
 	void AssignHoverItem(UInv_InventoryItem* InventoryItem);
+	void OnHide();
 	
 	UFUNCTION()
 	void AddItem(UInv_InventoryItem* InventoryItem);
@@ -46,11 +47,11 @@ protected:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 private:
-	
+	void PutHoverItemBack();
 	void ConstructGridSlots();
 	bool MatchesCategory(const UInv_InventoryItem* InventoryItem) const;
-	FInv_SlotAvailabilityResult HasRoomForItem_Grid_II(const UInv_InventoryItem* InventoryItem);
-	FInv_SlotAvailabilityResult HasRoomForItem_Grid_IM(const FInv_ItemManifest& ItemManifest);
+	FInv_SlotAvailabilityResult HasRoomForItem_Grid_II(const UInv_InventoryItem* InventoryItem, const int32 StackAmountOverride = -1);
+	FInv_SlotAvailabilityResult HasRoomForItem_Grid_IM(const FInv_ItemManifest& ItemManifest, const int32 StackAmountOverride = -1);
 	void AddItemToIndices(const FInv_SlotAvailabilityResult& Result, UInv_InventoryItem* NewItem);
 	FVector2D GetDrawSize(const FInv_GridFragment* GridFragment) const;
 	void SetSlottedItemImage(const UInv_SlottedItem* SlottedItem, const FInv_GridFragment* GridFragment, const FInv_IconFragment* ImageFragment) const;
