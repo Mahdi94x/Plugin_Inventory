@@ -112,7 +112,6 @@ private:
 	void FillInStack(const int32 FillAmount, const int32 Remainder, const int32 Index);
 	void CreateItemPopUp(int32 GridIndex);
 	
-
 	UFUNCTION()
 	void AddStacks(const FInv_SlotAvailabilityResult& Result);
 	
@@ -136,6 +135,9 @@ private:
 	
 	UFUNCTION()
 	void OnPopUpMenuConsume(int32 Index);
+	
+	UFUNCTION()
+	void OnInventoryMenuToggled(bool BOpen);
 	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UUserWidget> VisibleCursorWidgetClass;

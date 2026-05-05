@@ -31,6 +31,8 @@ void UInv_InventoryGrid::NativeOnInitialized()
 	/*Listen to an event fired from UInv_InventoryComponent::TryAddItem*/
 	InventoryComponent->OnStackChange.AddDynamic(this, &UInv_InventoryGrid::AddStacks);
 	
+	InventoryComponent->OnInventoryMenuToggled.AddDynamic(this, &ThisClass::OnInventoryMenuToggled);
+	
 }
 
 void UInv_InventoryGrid::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -1035,5 +1037,12 @@ void UInv_InventoryGrid::OnPopUpMenuConsume(int32 Index)
 	{
 		RemoveItemFromGrid(RightClickedInventoryItem, Index);
 	}
-	
+}
+
+void UInv_InventoryGrid::OnInventoryMenuToggled(bool BOpen)
+{
+	if (!BOpen)
+	{
+		PutHoverItemBack();
+	}
 }
