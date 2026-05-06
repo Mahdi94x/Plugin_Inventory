@@ -3,6 +3,7 @@
 #include "Widgets/Composite/Inv_Leaf_Icon.h"
 #include "Widgets/Composite/Inv_Leaf_LabeledValue.h"
 #include "Widgets/Composite/Inv_Leaf_Text.h"
+#include "EquipmentManagement/EquipActor/Inv_EquipActor.h"
 
 /*General Fragments*/
 /*====================================================================================================================*/
@@ -201,6 +202,24 @@ void FInv_EquipmentFragment::FragmentManifest()
 		{
 			SubRef->FragmentManifest();
 		}
+	}
+}
+/*====================================================================================================================*/
+AInv_EquipActor* FInv_EquipmentFragment::SpawnAttachedActor(USkeletalMeshComponent* AttachMesh) const
+{
+	if (!IsValid(EquipActorClass) || !IsValid(AttachMesh)) return nullptr;
+	
+	AInv_EquipActor* SpawnedActor = AttachMesh->GetWorld()->SpawnActor<AInv_EquipActor>(EquipActorClass);
+	SpawnedActor->AttachToComponent(AttachMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketAttachPoint);
+	
+	return SpawnedActor;
+}
+/*====================================================================================================================*/
+void FInv_EquipmentFragment::DestroyAttachedActor() const
+{
+	if (EquippedActor.IsValid())
+	{
+		EquippedActor->Destroy();
 	}
 }
 /*====================================================================================================================*/

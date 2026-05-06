@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "EquipmentComponent/Components/Inv_EquipmentComponent.h"
+#include "EquipmentManagement/Components/Inv_EquipmentComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Character.h"
 #include "InventoryManagment/Components/Inv_InventoryComponent.h"
