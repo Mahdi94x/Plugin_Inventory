@@ -7,6 +7,7 @@ namespace FragmentTags
 	UE_DEFINE_GAMEPLAY_TAG(StackableFragment, "FragmentTags.StackableFragment");
 	UE_DEFINE_GAMEPLAY_TAG(ItemNameFragment, "FragmentTags.ItemNameFragment");
 	UE_DEFINE_GAMEPLAY_TAG(ConsumptionFragment, "FragmentTags.ConsumptionFragment");
+	UE_DEFINE_GAMEPLAY_TAG(EquipmentFragment, "FragmentTags.EquipmentFragment");
 	UE_DEFINE_GAMEPLAY_TAG(PrimaryStatFragment,"FragmentTags.PrimaryStatFragment");
 	UE_DEFINE_GAMEPLAY_TAG(ItemTypeFragment,"FragmentTags.ItemTypeFragment");
 	UE_DEFINE_GAMEPLAY_TAG(FlavourTextFragment,"FragmentTags.FlavourTextFragment");

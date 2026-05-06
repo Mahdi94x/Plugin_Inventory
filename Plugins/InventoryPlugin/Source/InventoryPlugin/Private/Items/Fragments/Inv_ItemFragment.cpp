@@ -8,6 +8,7 @@
 /*====================================================================================================================*/
 void FInv_InventoryItemFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
+	if (!MatchesWidgetTag(Composite)) return;
 	Composite->Expand();
 }
 /*====================================================================================================================*/
@@ -18,8 +19,8 @@ bool FInv_InventoryItemFragment::MatchesWidgetTag(const UInv_CompositeBase* Comp
 /*====================================================================================================================*/
 void FInv_IconFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
-	if (!MatchesWidgetTag(Composite)) return;
 	FInv_InventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite)) return;
 	
 	if (const UInv_Leaf_Icon* IconLeaf = Cast<UInv_Leaf_Icon>(Composite); IsValid(IconLeaf))
 	{
@@ -31,8 +32,8 @@ void FInv_IconFragment::Assimilate(UInv_CompositeBase* Composite) const
 /*====================================================================================================================*/
 void FInv_TextFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
-	if (!MatchesWidgetTag(Composite)) return;
 	FInv_InventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite)) return;
 	
 	if (const UInv_Leaf_Text* TextLeaf = Cast<UInv_Leaf_Text>(Composite); IsValid(TextLeaf))
 	{
@@ -42,8 +43,8 @@ void FInv_TextFragment::Assimilate(UInv_CompositeBase* Composite) const
 /*====================================================================================================================*/
 void FInv_LabeledNumberFragment::Assimilate(UInv_CompositeBase* Composite) const
 {
-	if (!MatchesWidgetTag(Composite)) return;
 	FInv_InventoryItemFragment::Assimilate(Composite);
+	if (!MatchesWidgetTag(Composite)) return;
 	
 	if (const UInv_Leaf_LabeledValue* LabeledValueLeaf = Cast<UInv_Leaf_LabeledValue>(Composite); IsValid(LabeledValueLeaf))
 	{

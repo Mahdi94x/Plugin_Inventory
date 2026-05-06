@@ -222,7 +222,7 @@ struct FInv_EquipmentFragment : public FInv_InventoryItemFragment
 	virtual void FragmentManifest() override;
 	
 private:
-	UPROPERTY(EditAnywhere, Category = "Inventory")
+	UPROPERTY(EditAnywhere, Category = "Inventory", meta = (ExcludeBaseStruct))
 	TArray<TInstancedStruct<FInv_EquipModifier>> EquipModifiersArray;
 };
 /*====================================================================================================================*/
