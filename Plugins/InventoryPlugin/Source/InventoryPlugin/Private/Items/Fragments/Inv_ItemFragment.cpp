@@ -223,3 +223,8 @@ void FInv_EquipmentFragment::DestroyAttachedActor() const
 	}
 }
 /*====================================================================================================================*/
+void FInv_EquipmentFragment::SetEquippedActor(AInv_EquipActor* InEquippedActor)
+{
+	this->EquippedActor = InEquippedActor;
+}
+/*====================================================================================================================*/

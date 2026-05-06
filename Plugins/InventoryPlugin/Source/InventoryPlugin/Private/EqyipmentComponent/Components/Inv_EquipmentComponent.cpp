@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "EquipmentManagement/Components/Inv_EquipmentComponent.h"
+
+#include "EquipmentManagement/EquipActor/Inv_EquipActor.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Character.h"
 #include "InventoryManagment/Components/Inv_InventoryComponent.h"
@@ -52,6 +54,23 @@ void UInv_EquipmentComponent::OnItemEquipped(UInv_InventoryItem* EquippedItem)
 	
 	EquipmentFragment->OnEquip_Composite(OwningPlayerController.Get());
 	
+	if (!OwningSkeletalMesh.IsValid()) return;
+	AInv_EquipActor* SpawnedEquipActor =  SpawnEquippedActor(EquipmentFragment, ItemManifest, OwningSkeletalMesh.Get());
+	
+	EquippedActorsArray.Add(SpawnedEquipActor);
+	
+}
+
+AInv_EquipActor* UInv_EquipmentComponent::SpawnEquippedActor(FInv_EquipmentFragment* EquipmentFragment,
+	const FInv_ItemManifest& Manifest, USkeletalMeshComponent* AttachMesh)
+{
+	AInv_EquipActor* SpawnedEquippedActor = EquipmentFragment->SpawnAttachedActor(AttachMesh);
+	
+	SpawnedEquippedActor->SetEquipmentType(EquipmentFragment->GetEquipmentTag());
+	SpawnedEquippedActor->SetOwner(this->GetOwner());
+	EquipmentFragment->SetEquippedActor(SpawnedEquippedActor);
+	
+	return SpawnedEquippedActor;
 }
 
 void UInv_EquipmentComponent::OnItemUnequipped(UInv_InventoryItem* UnequippedItem)
