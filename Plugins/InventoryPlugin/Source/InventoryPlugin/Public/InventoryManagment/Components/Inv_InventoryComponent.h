@@ -57,6 +57,7 @@ public:
 	
 	UInv_InventoryBase* GetInventoryMenu() const {return this->InventoryMenu;}
 	
+	/*Delegates*/
 	FInventoryItemChange OnItemAdded;
 	FInventoryItemChange OnItemRemoved;
 	FNoRoomInInventory NoRoomInInventory;
