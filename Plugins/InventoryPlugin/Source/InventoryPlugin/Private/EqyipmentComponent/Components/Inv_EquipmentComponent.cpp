@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "EquipmentManagement/Components/Inv_EquipmentComponent.h"
-
 #include "EquipmentManagement/EquipActor/Inv_EquipActor.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Character.h"
@@ -40,7 +39,6 @@ void UInv_EquipmentComponent::InitInventoryComponent()
 	{
 		InventoryComponent->OnItemUnequipped.AddDynamic(this, &ThisClass::OnItemUnequipped);
 	}
-
 }
 
 void UInv_EquipmentComponent::OnItemEquipped(UInv_InventoryItem* EquippedItem)
@@ -66,7 +64,7 @@ AInv_EquipActor* UInv_EquipmentComponent::SpawnEquippedActor(FInv_EquipmentFragm
 {
 	AInv_EquipActor* SpawnedEquippedActor = EquipmentFragment->SpawnAttachedActor(AttachMesh);
 	
-	SpawnedEquippedActor->SetEquipmentType(EquipmentFragment->GetEquipmentTag());
+	SpawnedEquippedActor->SetEquipmentType(EquipmentFragment->GetEquipmentTypeTag());
 	SpawnedEquippedActor->SetOwner(this->GetOwner());
 	EquipmentFragment->SetEquippedActor(SpawnedEquippedActor);
 	
@@ -83,6 +81,24 @@ void UInv_EquipmentComponent::OnItemUnequipped(UInv_InventoryItem* UnequippedIte
 	if (!(EquipmentFragment)) return;
 	
 	EquipmentFragment->OnUnequip_Composite(OwningPlayerController.Get());
+	
+	this->RemoveEquippedActor(EquipmentFragment->GetEquipmentTypeTag());
 }
 
+void UInv_EquipmentComponent::RemoveEquippedActor(const FGameplayTag& EquipmentTypeTag)
+{
+	if (AInv_EquipActor* EquippedActor = FindEquippedActor(EquipmentTypeTag); IsValid(EquippedActor))
+	{
+		EquippedActorsArray.Remove(EquippedActor);
+		EquippedActor->Destroy();
+	}
+}
 
+AInv_EquipActor* UInv_EquipmentComponent::FindEquippedActor(const FGameplayTag& EquipmentTypeTag)
+{
+	auto FoundActor = EquippedActorsArray.FindByPredicate([&EquipmentTypeTag](const AInv_EquipActor* EquippedActor)
+	{
+		return EquippedActor->GetEquipmentType().MatchesTagExact(EquipmentTypeTag);
+	});
+	return FoundActor? *FoundActor : nullptr;
+}
