@@ -29,7 +29,11 @@ private:
 	UFUNCTION()
 	void OnItemUnequipped(UInv_InventoryItem* UnequippedItem);
 	
+	UFUNCTION()
+	void OnPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn);
+	
 	void InitInventoryComponent();
+	void InitPlayerController();
 	AInv_EquipActor* SpawnEquippedActor(FInv_EquipmentFragment* EquipmentFragment, const FInv_ItemManifest& Manifest, USkeletalMeshComponent* AttachMesh);
 	AInv_EquipActor* FindEquippedActor(const FGameplayTag& EquipmentTypeTag);
 	void RemoveEquippedActor(const FGameplayTag& EquipmentTypeTag);

@@ -12,17 +12,32 @@
 void UInv_EquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	InitPlayerController();
+}
+
+void UInv_EquipmentComponent::InitPlayerController()
+{
 	
-	OwningPlayerController = Cast<APlayerController>(GetOwner());
-	
-	if (OwningPlayerController.IsValid())
+	if (OwningPlayerController = Cast<APlayerController>(GetOwner()); OwningPlayerController.IsValid())
 	{
-		if (const ACharacter* OwnerCharacter = Cast<ACharacter>(OwningPlayerController->GetPawn()); IsValid(OwnerCharacter))
+		if (ACharacter* OwnerCharacter = Cast<ACharacter>(OwningPlayerController->GetPawn()); IsValid(OwnerCharacter)) /*On-Time*/
 		{
-			OwningSkeletalMesh = OwnerCharacter->GetMesh();
+			OnPossessedPawnChanged(nullptr,OwnerCharacter);
 		}
-		InitInventoryComponent();
+		else /*Too Early*/
+		{
+			OwningPlayerController->OnPossessedPawnChanged.AddDynamic(this, &ThisClass::OnPossessedPawnChanged);
+		}
 	}
+}
+
+void UInv_EquipmentComponent::OnPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn)
+{
+	if (ACharacter* OwnerCharacter = Cast<ACharacter>(OwningPlayerController->GetPawn()); IsValid(OwnerCharacter))
+	{
+		OwningSkeletalMesh = OwnerCharacter->GetMesh();
+	}
+	InitInventoryComponent();
 }
 
 void UInv_EquipmentComponent::InitInventoryComponent()
