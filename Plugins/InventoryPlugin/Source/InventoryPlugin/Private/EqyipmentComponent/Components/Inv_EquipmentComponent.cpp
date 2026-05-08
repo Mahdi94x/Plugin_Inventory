@@ -15,6 +15,11 @@ void UInv_EquipmentComponent::BeginPlay()
 	InitPlayerController();
 }
 
+void UInv_EquipmentComponent::SetOwningSkeletalMesh(USkeletalMeshComponent* InOwningMesh)
+{
+	this->OwningSkeletalMesh = InOwningMesh;
+}
+
 void UInv_EquipmentComponent::InitPlayerController()
 {
 	

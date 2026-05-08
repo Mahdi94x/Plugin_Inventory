@@ -21,6 +21,8 @@ class INVENTORYPLUGIN_API UInv_EquipmentComponent : public UActorComponent
 
 public:
 	virtual void BeginPlay() override;
+	void SetOwningSkeletalMesh(USkeletalMeshComponent* InOwningMesh);
+	void SetIsProxy(const bool InbProxy) {this->bIsProxy = InbProxy;}
 	
 private:
 	UFUNCTION()
@@ -44,5 +46,7 @@ private:
 	
 	UPROPERTY()
 	TArray<TObjectPtr<AInv_EquipActor>> EquippedActorsArray;
+	
+	bool bIsProxy{false};
 
 };
