@@ -25,6 +25,7 @@ class INVENTORYPLUGIN_API UInv_InventoryComponent : public UActorComponent
 
 public:
 	UInv_InventoryComponent();
+	bool IsMenuOpen() const {return this->bInventoryMenuOpen;}
 	virtual void BeginPlay() override;
 	void ToggleInventoryMenu();
 	
