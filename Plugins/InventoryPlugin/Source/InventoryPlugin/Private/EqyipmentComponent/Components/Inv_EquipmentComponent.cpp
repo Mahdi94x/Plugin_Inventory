@@ -15,11 +15,6 @@ void UInv_EquipmentComponent::BeginPlay()
 	InitPlayerController();
 }
 
-void UInv_EquipmentComponent::SetOwningSkeletalMesh(USkeletalMeshComponent* InOwningMesh)
-{
-	this->OwningSkeletalMesh = InOwningMesh;
-}
-
 void UInv_EquipmentComponent::InitPlayerController()
 {
 	
@@ -45,6 +40,15 @@ void UInv_EquipmentComponent::OnPossessedPawnChanged(APawn* OldPawn, APawn* NewP
 	InitInventoryComponent();
 }
 
+void UInv_EquipmentComponent::InitializeOwner(APlayerController* PlayerController)
+{
+	if (IsValid(PlayerController))
+	{
+		OwningPlayerController = PlayerController;
+	}
+	InitInventoryComponent();
+}
+
 void UInv_EquipmentComponent::InitInventoryComponent()
 {
 	InventoryComponent = UInv_InventoryStatics::GetInventoryComponent(OwningPlayerController.Get());
@@ -61,6 +65,11 @@ void UInv_EquipmentComponent::InitInventoryComponent()
 	}
 }
 
+void UInv_EquipmentComponent::SetOwningSkeletalMesh(USkeletalMeshComponent* InOwningMesh)
+{
+	this->OwningSkeletalMesh = InOwningMesh;
+}
+
 void UInv_EquipmentComponent::OnItemEquipped(UInv_InventoryItem* EquippedItem)
 {
 	if (!IsValid(EquippedItem)) return;
@@ -70,7 +79,7 @@ void UInv_EquipmentComponent::OnItemEquipped(UInv_InventoryItem* EquippedItem)
 	FInv_EquipmentFragment* EquipmentFragment = ItemManifest.GetFragmentOfTypeMutable<FInv_EquipmentFragment>();
 	if (!(EquipmentFragment)) return;
 	
-	EquipmentFragment->OnEquip_Composite(OwningPlayerController.Get());
+	if (!bIsProxy) EquipmentFragment->OnEquip_Composite(OwningPlayerController.Get());
 	
 	if (!OwningSkeletalMesh.IsValid()) return;
 	AInv_EquipActor* SpawnedEquipActor =  SpawnEquippedActor(EquipmentFragment, ItemManifest, OwningSkeletalMesh.Get());
@@ -100,7 +109,7 @@ void UInv_EquipmentComponent::OnItemUnequipped(UInv_InventoryItem* UnequippedIte
 	FInv_EquipmentFragment* EquipmentFragment = ItemManifest.GetFragmentOfTypeMutable<FInv_EquipmentFragment>();
 	if (!(EquipmentFragment)) return;
 	
-	EquipmentFragment->OnUnequip_Composite(OwningPlayerController.Get());
+	if (!bIsProxy) EquipmentFragment->OnUnequip_Composite(OwningPlayerController.Get());
 	
 	this->RemoveEquippedActor(EquipmentFragment->GetEquipmentTypeTag());
 }

@@ -20,6 +20,10 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
+	
+	FTimerHandle TimerForNextTick;
+	void DelayedInitializeOwner(); /*Callback for the timer*/
+	void DelayedInitialization();
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UInv_EquipmentComponent> ProxyEquipmentComponent;
 	
