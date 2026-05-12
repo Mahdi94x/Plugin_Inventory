@@ -51,7 +51,7 @@ void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent)
 	else if (Result.TotalRoomToFill > 0)
 	{
 		// this item does not exist in the inventory and update all pertinent slots
-		Server_AddNewItem(ItemComponent, Result.bStackable ? Result.TotalRoomToFill : 0 );
+		Server_AddNewItem(ItemComponent, Result.bStackable ? Result.TotalRoomToFill : 0, Result.Remainder);
 	}
 }
 
@@ -133,7 +133,7 @@ void UInv_InventoryComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeP
 	DOREPLIFETIME(ThisClass, InventoryFaList);
 }
 
-void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount)
+void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount , int32 Remainder)
 {
 	UInv_InventoryItem* NewInventoryItem = InventoryFaList.AddEntry(ItemComponent);
 	
@@ -144,7 +144,14 @@ void UInv_InventoryComponent::Server_AddNewItem_Implementation(UInv_ItemComponen
 	
 	NewInventoryItem->SetTotalStackCount(StackCount);
 	
-	ItemComponent->PickedUp();
+	if (Remainder == 0)
+	{
+		ItemComponent->PickedUp();
+	}
+	else if (FInv_StackableFragment* StackableFragment = ItemComponent->GetItemComponent_Manifest_Mutable().GetFragmentOfTypeMutable<FInv_StackableFragment>())
+	{
+		StackableFragment->SetStackCount(Remainder); 
+	}
 }
 
 void UInv_InventoryComponent::Server_AddStacksToItem_Implementation(UInv_ItemComponent* ItemComponent, int32 StackCount,
@@ -159,7 +166,7 @@ void UInv_InventoryComponent::Server_AddStacksToItem_Implementation(UInv_ItemCom
 	{
 		ItemComponent->PickedUp();
 	}
-	else if (FInv_StackableFragment* StackableFragment = ItemComponent->GetItemComponent_Manifest().GetFragmentOfTypeMutable<FInv_StackableFragment>())
+	else if (FInv_StackableFragment* StackableFragment = ItemComponent->GetItemComponent_Manifest_Mutable().GetFragmentOfTypeMutable<FInv_StackableFragment>())
 	{
 		StackableFragment->SetStackCount(Remainder); /*updating the stack count of the Actor in the world, not the inventory item*/
 	}

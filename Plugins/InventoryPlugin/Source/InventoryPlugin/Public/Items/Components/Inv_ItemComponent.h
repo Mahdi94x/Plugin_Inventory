@@ -19,6 +19,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	void InitItemManifest(FInv_ItemManifest CopyOfManifest);
 	FInv_ItemManifest GetItemComponent_Manifest() const {return this->ItemComponent_Manifest;}
+	FInv_ItemManifest& GetItemComponent_Manifest_Mutable() {return this->ItemComponent_Manifest;}
 	void PickedUp();
 	
 	UFUNCTION(BlueprintImplementableEvent, Category = "Inventory") 

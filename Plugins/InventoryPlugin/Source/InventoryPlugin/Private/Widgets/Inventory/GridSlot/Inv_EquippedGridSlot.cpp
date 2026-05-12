@@ -81,6 +81,8 @@ void UInv_EquippedGridSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent
 	UInv_HoverItem* HoverItem = UInv_InventoryStatics::GetHoverItem(GetOwningPlayer());
 	if (!IsValid(HoverItem)) return;
 	
+	if (IsValid(EquippedSlottedItem)) return;
+	
 	/*More Specific Tag compared to less specific tag*/
 	if (HoverItem->GetItemType().MatchesTag(EquipmentTypeTag))
 	{

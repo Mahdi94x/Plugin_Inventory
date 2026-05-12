@@ -4,10 +4,10 @@
 #include "EquipmentManagement/Components/Inv_EquipmentComponent.h"
 #include "GameFramework/Character.h"
 
-// Sets default values
 AInv_ProxyMesh::AInv_ProxyMesh()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	SetReplicates(false);
 	
 	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
 	
