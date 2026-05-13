@@ -15,6 +15,7 @@ namespace GameItems
 		namespace Cloaks
 		{
 			UE_DECLARE_GAMEPLAY_TAG_EXTERN(RedCloak)
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(YellowCloak)
 		}
 
 		namespace Masks
