@@ -18,7 +18,8 @@ namespace GameItems
 
 		namespace Masks
 		{
-			UE_DEFINE_GAMEPLAY_TAG(SteelMask, "GameItems.Equipment.Masks.SteelMask")
+			UE_DEFINE_GAMEPLAY_TAG(RedMask, "GameItems.Equipment.Masks.Red")
+			UE_DEFINE_GAMEPLAY_TAG(YellowMask, "GameItems.Equipment.Masks.Yellow")
 		}
 	}
 

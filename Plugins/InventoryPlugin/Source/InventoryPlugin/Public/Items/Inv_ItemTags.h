@@ -20,7 +20,8 @@ namespace GameItems
 
 		namespace Masks
 		{
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(SteelMask)
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(RedMask)
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(YellowMask)
 		}
 	}
 
