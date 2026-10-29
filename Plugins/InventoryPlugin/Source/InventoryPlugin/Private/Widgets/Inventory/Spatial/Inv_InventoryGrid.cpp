@@ -31,7 +31,7 @@ void UInv_InventoryGrid::NativeOnInitialized()
 	/*Listen to an event fired from UInv_InventoryComponent::TryAddItem*/
 	InventoryComponent->OnStackChange.AddDynamic(this, &UInv_InventoryGrid::AddStacks);
 	
-	InventoryComponent->OnInventoryMenuToggled.AddDynamic(this, &ThisClass::OnInventoryMenuToggled);
+	InventoryComponent->OnInventoryMenuToggled.AddDynamic(this, &UInv_InventoryGrid::OnInventoryMenuToggled);
 	
 }
 
@@ -381,7 +381,7 @@ void UInv_InventoryGrid::CreateItemPopUp(int32 GridIndex)
 	const int32 SliderMax = GridSlotsArray[GridIndex]->GetStackCount() - 1;
 	if (RightClickedItem->IsStackable() && SliderMax > 0)
 	{
-		ItemPopUp->OnSplit.BindDynamic(this, &ThisClass::UInv_InventoryGrid::OnPopUpMenuSplit);
+		ItemPopUp->OnSplit.BindDynamic(this, &UInv_InventoryGrid::OnPopUpMenuSplit);
 		ItemPopUp->SetSliderParams(SliderMax, FMath::Max(1, GridSlotsArray[GridIndex]->GetStackCount()/2));
 	}
 	else
@@ -389,11 +389,11 @@ void UInv_InventoryGrid::CreateItemPopUp(int32 GridIndex)
 		ItemPopUp->CollapseSplitButton();
 	}
 	
-	ItemPopUp->OnDrop.BindDynamic(this, &ThisClass::OnPopUpMenuDrop);
+	ItemPopUp->OnDrop.BindDynamic(this, &UInv_InventoryGrid::OnPopUpMenuDrop);
 	
 	if (RightClickedItem->IsConsumable())
 	{
-		ItemPopUp->OnConsume.BindDynamic(this, &ThisClass::UInv_InventoryGrid::OnPopUpMenuConsume);
+		ItemPopUp->OnConsume.BindDynamic(this, &UInv_InventoryGrid::OnPopUpMenuConsume);
 	}
 	else
 	{
@@ -797,7 +797,7 @@ UInv_SlottedItem* UInv_InventoryGrid::CreateSlottedItem(UInv_InventoryItem* Item
 	SlottedItem->SetIsStackable(BStackable);
 	const int32 StackUpdateAmount = BStackable ? StackAmount : 0;
 	SlottedItem->UpdateStackCount(StackUpdateAmount);
-	SlottedItem->OnSlottedItemClicked.AddDynamic(this, &ThisClass::OnSlottedItemClicked);
+	SlottedItem->OnSlottedItemClicked.AddDynamic(this, &UInv_InventoryGrid::OnSlottedItemClicked);
 	
 	return SlottedItem;
 }
@@ -875,9 +875,9 @@ void UInv_InventoryGrid::ConstructGridSlots()
 			
 			GridSlotsArray.Add(GridSlot);
 			/*Bind to the events fired from Inv_GridSlot*/
-			GridSlot->GridSlotClicked.AddDynamic(this, &ThisClass::UInv_InventoryGrid::OnGridSlotClicked);
-			GridSlot->GridSlotHovered.AddDynamic(this, &ThisClass::UInv_InventoryGrid::OnGridSlotHovered);
-			GridSlot->GridSlotUnhovered.AddDynamic(this, &ThisClass::UInv_InventoryGrid::OnGridSlotUnhovered);
+			GridSlot->GridSlotClicked.AddDynamic(this, &UInv_InventoryGrid::OnGridSlotClicked);
+			GridSlot->GridSlotHovered.AddDynamic(this, &UInv_InventoryGrid::OnGridSlotHovered);
+			GridSlot->GridSlotUnhovered.AddDynamic(this, &UInv_InventoryGrid::OnGridSlotUnhovered);
 		}
 	}
 }

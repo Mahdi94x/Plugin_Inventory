@@ -10,10 +10,10 @@ void UInv_ItemPopUp::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	
-	Button_Split->OnClicked.AddDynamic(this, &ThisClass::UInv_ItemPopUp::OnSplitButtonClicked);
-	Button_Consume->OnClicked.AddDynamic(this, &ThisClass::UInv_ItemPopUp::OnConsumeButtonClicked);
-	Button_Drop->OnClicked.AddDynamic(this, &ThisClass::UInv_ItemPopUp::OnDropButtonClicked);
-	Slider_Split->OnValueChanged.AddDynamic(this, &ThisClass::OnSliderValueChanged);
+	Button_Split->OnClicked.AddDynamic(this, &UInv_ItemPopUp::OnSplitButtonClicked);
+	Button_Consume->OnClicked.AddDynamic(this, &UInv_ItemPopUp::OnConsumeButtonClicked);
+	Button_Drop->OnClicked.AddDynamic(this, &UInv_ItemPopUp::OnDropButtonClicked);
+	Slider_Split->OnValueChanged.AddDynamic(this, &UInv_ItemPopUp::OnSliderValueChanged);
 	
 }
 

@@ -8,8 +8,11 @@ public class Plugin_InventoryTarget : TargetRules
 	public Plugin_InventoryTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V6;
-		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_7;
-		ExtraModuleNames.Add("Plugin_Inventory");
+		
+		DefaultBuildSettings = BuildSettingsVersion.V7;
+		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_8;
+		
+		ExtraModuleNames.AddRange(new string[] { "Plugin_Inventory" });
+		
 	}
 }
